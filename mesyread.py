@@ -36,7 +36,7 @@ def getevent(sixbytes):
 import sys
 import os
 import argparse
-import numpy
+import numpy as np
 
 HEADERLENGTH = 40
 
@@ -46,17 +46,27 @@ ClosingSig = '0xFFFFAAAA55550000'
 # "{0:016b}".format(0x5555)
 
 
-LISTFILE_FILENAME = "listfile.mdat"
+LISTFILE_FILENAME = "/home/stein/my/uni/qm/listfile.mdat"
 listfile = open(LISTFILE_FILENAME, 'rb')
 
 #statinfo = os.stat(listfile)
 
             
 LENGTH_OF_EVENT = 6 # 48 Bit = 6 Byte
-LENGTH_OF_EVENT_SEPARATOR = # 4 x 16 Bit 
+LENGTH_OF_EVENT_SEPARATOR = 8 # 4 x 16 Bit 
 
 LIST_FILE_SIZE = os.path.getsize(LISTFILE_FILENAME)
-NUMBER_OF_EVENTS = (LIST_FILE_SIZE - HEADERLENGTH) / 
+NUMBER_OF_EVENTS = 5 # (LIST_FILE_SIZE - HEADERLENGTH) / 
+
+#record_dtype = np.dtype( [ ( 'headersep' , 'b64' ) , ( 'dblock' , 'b4') ] )
+record_dtype = np.dtype( [ ( 'ID' , 'b1' ) , 
+                          ( 'ModID' , 'b3'),                           
+                          ( 'SlotID' , 'b5'), 
+                          ( 'Amplitude' , 'b10'), 
+                          ( 'Position' , 'b10'), 
+                          ( 'Timestamp' , 'b10') ] )
+
+data = np.fromfile(listfile , dtype = record_dtype , count = 8 )
 
 
 print("We expect %d events"%NUMBER_OF_EVENTS)
