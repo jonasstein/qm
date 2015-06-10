@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 import construct as cstr
 
 
@@ -61,3 +62,5 @@ def main():
     return ergebnis
 
  
+if __name__ == '__main__':
+    main()
