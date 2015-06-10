@@ -1,86 +1,67 @@
-#! /usr/bin/env python2
-# -*- coding: utf-8 -*-
-
-"""
-Created on Fri Apr 10 17:00:07 2015
-
-@author: stein
-"""
-
-def string2bits(bytestring):
-    MAXi = len(bytestring)    
-
-    outbits = ''   
-    for i in range(MAXi):
-        outbits = outbits + byte2bits(bytestring[i])
-    return(outbits)
-        
-
-def byte2bits(mybyte):
-    return(bin(ord('a'))[2:])
+import construct as cstr
 
 
-def getevent(sixbytes):
-    bitpattern = string2bits(sixbytes)
+
+def UBInt48(name):
+    return cstr.BitField(name, 48)
+
+def main():
+    myfile = open('./qmlist/10kEvents.mdat', 'rb')
+    substrate = myfile.read()
+    myfile.close()
     
-    ID = bitpattern[0]            #  1 bit
-    ModID = bitpattern[1:4]       #  3 bits
-    SlotID = bitpattern[4:9]      #  5 bits
-    Amplitude = bitpattern[9:19]  # 10 bits
-    Position = bitpattern[19:29]  # 10 bits
-    Timestamp = bitpattern[29:48] # 19 bits
-
-    print(ID, ModID, SlotID, Amplitude, Timestamp)
-#    return(ID, ModID, SlotID, Amplitude, Position, Timestamp)
-
-import sys
-import os
-import argparse
-import numpy as np
-
-HEADERLENGTH = 40
-
-HeaderSep =  '0x00005555AAAAFFFF'
-DataSep =    '0x0000FFFF5555AAAA'
-ClosingSig = '0xFFFFAAAA55550000'
-# "{0:016b}".format(0x5555)
-
-
-LISTFILE_FILENAME = "/home/stein/my/uni/qm/listfile.mdat"
-listfile = open(LISTFILE_FILENAME, 'rb')
-
-#statinfo = os.stat(listfile)
-
-            
-LENGTH_OF_EVENT = 6 # 48 Bit = 6 Byte
-LENGTH_OF_EVENT_SEPARATOR = 8 # 4 x 16 Bit 
-
-LIST_FILE_SIZE = os.path.getsize(LISTFILE_FILENAME)
-NUMBER_OF_EVENTS = 5 # (LIST_FILE_SIZE - HEADERLENGTH) / 
-
-#record_dtype = np.dtype( [ ( 'headersep' , 'b64' ) , ( 'dblock' , 'b4') ] )
-record_dtype = np.dtype( [ ( 'ID' , 'b1' ) , 
-                          ( 'ModID' , 'b3'),                           
-                          ( 'SlotID' , 'b5'), 
-                          ( 'Amplitude' , 'b10'), 
-                          ( 'Position' , 'b10'), 
-                          ( 'Timestamp' , 'b10') ] )
-
-data = np.fromfile(listfile , dtype = record_dtype , count = 8 )
-
-
-print("We expect %d events"%NUMBER_OF_EVENTS)
-
-header = listfile.read(HEADERLENGTH)
-
-i=0
-
-for i in range(0,NUMBER_OF_EVENTS):
-    thisevent =  listfile.read(6)
-    print(i)
-    getevent(thisevent)
+    line = cstr.CString("line", terminators = b'\x0a')
     
-    #event[0:5][i] = thisevent #' '.join(format(ord(i),'b').zfill(8) for i in thisevent) 
-#    i = i + 1
-    
+    header_separator = cstr.String("foo", 8)
 
+    header = cstr.Sequence( \
+     "header", \
+     line, \
+     cstr.String("foo", 15), \
+     cstr.CString("length", terminators = b' '), \
+     cstr.Array(lambda ctx: int(ctx.length) - 1, line), \
+     header_separator)
+
+    buffer_separator = cstr.String("foo", 8)
+
+#    ULInt48(name) = cstr.Sequence( \
+#     name, \
+#     cstr.UBInt16("Lo"), \
+#     cstr.UBInt16("Mid"), \
+#     cstr.UBInt16("Hi"))
+
+    buffer_header = cstr.Struct( \
+     "buffer_header", \
+     cstr.UBInt16("buffer_type"), \
+     cstr.UBInt16("header_length"), \
+     cstr.UBInt16("buffer_number"), \
+     cstr.UBInt16("run_id"), \
+     cstr.UBInt8("mcpd-id"), \
+     cstr.UBInt8("status"), \
+     UBInt48("a"), \
+     UBInt48("b"), \
+     UBInt48("c"), \
+     UBInt48("d"), \
+     UBInt48("e"))
+
+    buffer_itself = cstr.Sequence( \
+     "buffer_itself", \
+     cstr.UBInt16("length"), \
+     buffer_header, \
+     cstr.Array(lambda ctx: (int(ctx.length) - 19) * 2, \
+      cstr.String("foo", 1)))
+
+    buffer = cstr.Sequence( \
+     "buffer", \
+     buffer_itself, \
+     buffer_separator)
+
+
+    body = cstr.OptionalGreedyRange(buffer)
+
+    everything = cstr.Sequence( \
+     "everything", \
+     header, \
+     body)
+    ergebnis = everything.parse(substrate)
+    return ergebnis
