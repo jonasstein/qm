@@ -3,10 +3,10 @@ import construct as cstr
 
 
 def UBInt48(name):
-    return cstr.BitField(name, 48)
+    return cstr.String(name, 6)
 
 def main():
-    myfile = open('./qmlist/10kEvents.mdat', 'rb')
+    myfile = open('./qmlist/3kHz_1kHz_FM_noise_1800sec.mdat', 'rb')
     substrate = myfile.read()
     myfile.close()
     
@@ -22,13 +22,7 @@ def main():
      cstr.Array(lambda ctx: int(ctx.length) - 1, line), \
      header_separator)
 
-    buffer_separator = cstr.String("foo", 8)
-
-#    ULInt48(name) = cstr.Sequence( \
-#     name, \
-#     cstr.UBInt16("Lo"), \
-#     cstr.UBInt16("Mid"), \
-#     cstr.UBInt16("Hi"))
+    buffer_separator = cstr.String("buffer_separator", 8)
 
     buffer_header = cstr.Struct( \
      "buffer_header", \
@@ -44,14 +38,14 @@ def main():
      UBInt48("d"), \
      UBInt48("e"))
 
-    buffer_itself = cstr.Sequence( \
+    buffer_itself = cstr.Struct( \
      "buffer_itself", \
      cstr.UBInt16("length"), \
      buffer_header, \
-     cstr.Array(lambda ctx: (int(ctx.length) - 19) * 2, \
-      cstr.String("foo", 1)))
+     cstr.Array(lambda ctx: (int(ctx.length) - 21) / 3.0, \
+      cstr.String("events", 6)))
 
-    buffer = cstr.Sequence( \
+    buffer = cstr.Struct( \
      "buffer", \
      buffer_itself, \
      buffer_separator)
@@ -59,9 +53,11 @@ def main():
 
     body = cstr.OptionalGreedyRange(buffer)
 
-    everything = cstr.Sequence( \
+    everything = cstr.Struct( \
      "everything", \
      header, \
      body)
     ergebnis = everything.parse(substrate)
     return ergebnis
+
+ 
