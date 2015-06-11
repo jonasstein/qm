@@ -1,12 +1,15 @@
 class TParser {
 
     private:
-    unsigned long long* zTimestamp;
     long zIndex;
+    char zFilename[512];
+    TKangaroo* zKangaroo;
     public:
         TParser();
         ~TParser();
         void hallowelt();
+        void set_kangaroo(TKangaroo* pKangaroo);
+        void set_filename(char* pFilename);
         void parse();
         void read_header(FILE* pFile);
         void read_line(FILE* pFile);
@@ -14,26 +17,33 @@ class TParser {
         void read_buffer(FILE* pFile);
         int read_word(FILE* pFile);
         unsigned long long read_48bits(FILE* pFile);
-        void read_event(FILE* pFile,
-                        unsigned long long pTimestamp_buffer);
+        void read_event(FILE* pFile);
 };
 
 TParser::TParser() {
-    zTimestamp = new unsigned long long[11549773];
     zIndex = 0;
+    strcpy(zFilename, "");
 }
 
 TParser::~TParser() {
-    delete(zTimestamp);
+
 }
 
 void TParser::hallowelt() {
     cout << "hallo welt!" << endl;
 }
 
+void TParser::set_kangaroo(TKangaroo* pKangaroo) {
+    zKangaroo = pKangaroo;
+}
+
+void TParser::set_filename(char* pFilename) {
+    strcpy(zFilename, pFilename);
+}
+
 void TParser::parse() {
     FILE* file;
-    file = fopen("./qmlist/3kHz_1kHz_FM_noise_1800sec.mdat", "rb");
+    file = fopen(zFilename, "rb");
 //    file = fopen("./qmlist/10kEvents.mdat", "rb");
     read_header(file);
     read_separator(file);
@@ -87,11 +97,13 @@ void TParser::read_buffer(FILE* pFile) {
             read_word(pFile);
         }
         timestamp_buffer = read_48bits(pFile);
+        zKangaroo->set_timestamp_buffer(timestamp_buffer);
+        zKangaroo->append_event(1099511627776);
         for(i = 0; i < 4; i++) {
             read_48bits(pFile);
         }
         for(i = 0; i < (buffer_length - 21) / 3; i++) {
-            read_event(pFile, timestamp_buffer);
+            read_event(pFile);
         }
         read_separator(pFile);
     }
@@ -115,14 +127,10 @@ unsigned long long TParser::read_48bits(FILE* pFile) {
          + ziffer_hi * 4294967296;
 }
 
-void TParser::read_event(FILE* pFile,
-                         unsigned long long pTimestamp_buffer) {
-    unsigned long long plampatsch;
+void TParser::read_event(FILE* pFile) {
+    unsigned long long rumpraline;
     unsigned long long timestamp_total;
     long timestamp_event;
-    plampatsch = read_48bits(pFile);
-    timestamp_event = plampatsch % 524288;
-    timestamp_total = pTimestamp_buffer + timestamp_event;
-    zIndex++;
-    zTimestamp[zIndex] = timestamp_total;
+    rumpraline = read_48bits(pFile);
+    zKangaroo->append_event(rumpraline);
 }
