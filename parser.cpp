@@ -73,9 +73,7 @@ void TParser::read_separator(FILE* pFile) {
     int i;
     for(i = 0; i < 8; i++){
         fread(&k, 1, 1, pFile);
-//        cout << k << " ";
     }
-//    cout << endl;
 }
 
 void TParser::read_buffer(FILE* pFile) {
@@ -89,10 +87,8 @@ void TParser::read_buffer(FILE* pFile) {
         read_word(pFile);
         read_word(pFile);
         fread(&k, 1, 1, pFile);
-        cout << "ende im gelaende!" << endl;
     }
     else {
-//        cout << buffer_length << endl;
         for(i = 0; i < 5; i++) {
             read_word(pFile);
         }
@@ -128,9 +124,9 @@ unsigned long long TParser::read_48bits(FILE* pFile) {
 }
 
 void TParser::read_event(FILE* pFile) {
-    unsigned long long rumpraline;
+    unsigned long long rum_praline;
     unsigned long long timestamp_total;
     long timestamp_event;
-    rumpraline = read_48bits(pFile);
-    zKangaroo->append_event(rumpraline);
+    rum_praline = read_48bits(pFile);
+    zKangaroo->append_event(rum_praline);
 }
