@@ -68,9 +68,6 @@ void THisto::fill(float pValue) {
             ((pValue - zFirstLeftEdge) / zBinWidth);
     if (index < zNumOfBins) {
         zCounts[index]++;
-//        cout << zLeftEdges[index] << " < " <<
-//              pValue << " < " <<
-//              zRightEdges[index] << endl;
     }
 }
 
@@ -79,10 +76,10 @@ void THisto::write_out() {
     cout << "#  --------" << endl;
     cout << "# | Histo: |" << endl;
     cout << "#  --------" << endl;
-    cout << "# left edge | mid point | "
-         << "right egde | counts " << endl;
+    printf()
+    printf("# %10s, %10s, %10s, %10s, %10s", "left", "mid", "right", "counts"
     for(i = 0; i < zNumOfBins; i++) {
-	printf("%f, %f, %f, %llu\n", 
+	printf("%10.3f, %10.3f, %10.3f, %10llu\n", 
 	       zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
 
     }
