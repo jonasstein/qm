@@ -1,3 +1,4 @@
+
 class THisto {
     private:
         unsigned long zNumOfBins;
@@ -75,15 +76,17 @@ void THisto::fill(float pValue) {
 
 void THisto::write_out() {
     int i;
-    cout << "#  -------" << endl;
-    cout << "# | Histo:|" << endl;
-    cout << "#  -------" << endl;
+    cout << "#  --------" << endl;
+    cout << "# | Histo: |" << endl;
+    cout << "#  --------" << endl;
     cout << "# left edge | mid point | "
          << "right egde | counts " << endl;
     for(i = 0; i < zNumOfBins; i++) {
-        cout << zLeftEdges[i] << " "
-             << zMidPoints[i] << " "
-             << zRightEdges[i] << " "
-             << zCounts[i] << endl;
+      //        cout << zLeftEdges[i] << " "
+      //       << zMidPoints[i] << " "
+      //        << zRightEdges[i] << " "
+      //       << zCounts[i] << endl;
+	printf("%f, %f, %f, %llu\n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
+
     }
 }
