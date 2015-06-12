@@ -82,11 +82,8 @@ void THisto::write_out() {
     cout << "# left edge | mid point | "
          << "right egde | counts " << endl;
     for(i = 0; i < zNumOfBins; i++) {
-      //        cout << zLeftEdges[i] << " "
-      //       << zMidPoints[i] << " "
-      //        << zRightEdges[i] << " "
-      //       << zCounts[i] << endl;
-	printf("%f, %f, %f, %llu\n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
+	printf("%f, %f, %f, %llu\n", 
+	       zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
 
     }
 }
