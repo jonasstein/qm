@@ -1,3 +1,6 @@
+// For TParser time variables are given in units of
+// 100 nano seconds.
+
 class TParser {
 
     private:
@@ -44,7 +47,6 @@ void TParser::set_filename(char* pFilename) {
 void TParser::parse() {
     FILE* file;
     file = fopen(zFilename, "rb");
-//    file = fopen("./qmlist/10kEvents.mdat", "rb");
     read_header(file);
     read_separator(file);
     while(!feof(file)) {
@@ -80,7 +82,7 @@ void TParser::read_buffer(FILE* pFile) {
     int buffer_length;
     int i;
     int k;
-    unsigned long long timestamp_buffer;
+    unsigned long long timestamp_buffer_100ns;
     buffer_length = read_word(pFile);
     if (buffer_length == 65535) {
         read_word(pFile);
@@ -92,9 +94,10 @@ void TParser::read_buffer(FILE* pFile) {
         for(i = 0; i < 5; i++) {
             read_word(pFile);
         }
-        timestamp_buffer = read_48bits(pFile);
-        zKangaroo->set_timestamp_buffer(timestamp_buffer);
-        zKangaroo->append_event(1099511627776);
+        timestamp_buffer_100ns = read_48bits(pFile);
+        zKangaroo->set_timestamp_buffer_100ns(
+         timestamp_buffer_100ns);
+        //zKangaroo->append_event(1099511627776);
         for(i = 0; i < 4; i++) {
             read_48bits(pFile);
         }
@@ -125,8 +128,6 @@ unsigned long long TParser::read_48bits(FILE* pFile) {
 
 void TParser::read_event(FILE* pFile) {
     unsigned long long rum_praline;
-    unsigned long long timestamp_total;
-    long timestamp_event;
     rum_praline = read_48bits(pFile);
     zKangaroo->append_event(rum_praline);
 }

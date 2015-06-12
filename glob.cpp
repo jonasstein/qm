@@ -31,13 +31,11 @@ int str2int(char* pString) {
 }
 
 float str2float(char* pString) {
-    int nachkomma;
     char c;
     int i;
     float result;
     float factor;
     int sign;
-    nachkomma = 0;
     i = 0;
     result = 0.0;
     c = pString[0];

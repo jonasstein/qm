@@ -1,12 +1,14 @@
+// In THisto all time variables are given in nano seconds.
+
 class THisto {
     private:
         unsigned long zNumOfBins;
-        float zFirstLeftEdge;
-        float zLastRightEdge;
-        float zLeftEdges[cMaxNumOfBins];
-        float zMidPoints[cMaxNumOfBins];
-        float zRightEdges[cMaxNumOfBins];
-        float zBinWidth;
+        double zFirstLeftEdge;
+        double zLastRightEdge;
+        double zLeftEdges[cMaxNumOfBins];
+        double zMidPoints[cMaxNumOfBins];
+        double zRightEdges[cMaxNumOfBins];
+        double zBinWidth;
         unsigned long long zCounts[cMaxNumOfBins];
     public:
         THisto();
@@ -74,12 +76,12 @@ void THisto::fill(float pValue) {
 }
 
 void THisto::write_out() {
-    int i;
+    unsigned long i;
     cout << "#  -------" << endl;
     cout << "# | Histo:|" << endl;
     cout << "#  -------" << endl;
-    cout << "# left edge | mid point | "
-         << "right egde | counts " << endl;
+    cout << "# left edge (ns) | mid point (ns) | "
+         << "right egde (ns) | counts " << endl;
     for(i = 0; i < zNumOfBins; i++) {
         cout << zLeftEdges[i] << " "
              << zMidPoints[i] << " "

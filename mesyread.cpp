@@ -43,13 +43,15 @@ int main(int argc, char **argv) {
     parser->set_filename(filename);
     parser->parse();
 
-//    kangaroo->print_first_lines();
+    kangaroo->print_first_lines();
 
     kangaroo->set_histo(histo);
     histo->set_num_of_bins(num_of_bins);
-//    kangaroo->determine_max_periode_length();
-    kangaroo->set_max_periode_length(400500);
+    kangaroo->determine_max_periode_length_1ns();
+//    kangaroo->set_max_periode_length_1ns(40050000);
     kangaroo->fill_histo();
+
+    kangaroo->write_out();
 
     histo->write_out();
 
