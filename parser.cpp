@@ -28,7 +28,6 @@ TParser::TParser() {
 }
 
 TParser::~TParser() {
-
 }
 
 void TParser::set_kangaroo(TKangaroo* pKangaroo) {
@@ -79,7 +78,7 @@ void TParser::read_buffer(FILE* pFile) {
     int k;
     unsigned long long timestamp_buffer_100ns;
     buffer_length = read_word(pFile);
-    if (buffer_length == 65535) {
+    if (buffer_length == ((2 << 16) - 1)) {
         read_word(pFile);
         read_word(pFile);
         read_word(pFile);
@@ -92,7 +91,7 @@ void TParser::read_buffer(FILE* pFile) {
         timestamp_buffer_100ns = read_48bits(pFile);
         zKangaroo->set_timestamp_buffer_100ns(
          timestamp_buffer_100ns);
-        //zKangaroo->append_event(1099511627776);
+        //zKangaroo->append_event(2 << 40);
         for(i = 0; i < 4; i++) {
             read_48bits(pFile);
         }
@@ -108,7 +107,7 @@ int TParser::read_word(FILE* pFile) {
     int zweite_ziffer = 0;
     fread(&erste_ziffer, 1, 1, pFile);
     fread(&zweite_ziffer, 1, 1, pFile);
-    return 256 * erste_ziffer + zweite_ziffer;
+    return (2 << 8) * erste_ziffer + zweite_ziffer;
 }
 
 unsigned long long TParser::read_48bits(FILE* pFile) {
@@ -117,8 +116,8 @@ unsigned long long TParser::read_48bits(FILE* pFile) {
     ziffer_mid = read_word(pFile);
     ziffer_hi = read_word(pFile);
     return ziffer_lo
-         + ziffer_mid * 65536
-         + ziffer_hi * 4294967296;
+      + ziffer_mid * (2 << 16)
+      + ziffer_hi * (2 << 32); // FIXME THIS LINE IS BROKEN
 }
 
 void TParser::read_event(FILE* pFile) {

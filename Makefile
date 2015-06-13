@@ -2,7 +2,7 @@
 
 binaries=mesyread
 
-CXX = g++ -O2 -Wall
+CXX = g++ -O2 -Wall -Wno-unused-result
 
 all: clean $(binaries)
 

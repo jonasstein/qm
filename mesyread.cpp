@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
    	   "# voltage:      %1.0f \n"
    	   "# num of bins:  %d \n"
 	   "# ----------------------------------\n"
-	   "# ",
+	   "# \n",
 	   filename, flipper, temperature, voltage, num_of_bins);
 
     parser = new TParser();

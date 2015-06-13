@@ -9,28 +9,24 @@
 
 class TKangaroo {
     private:
-        unsigned long long
-         zTimestamps_1ns[cMaxNumOfEvents];
+        unsigned long long zTimestamps_1ns[cMaxNumOfEvents];
         unsigned long  zDatas[cMaxNumOfEvents];
         unsigned short zDataIDs[cMaxNumOfEvents];
         unsigned short zTrigIDs[cMaxNumOfEvents];
         unsigned short zIDs[cMaxNumOfEvents];
-        unsigned long long
-         zTimestampBuffer_100ns;
+        unsigned long long zTimestampBuffer_100ns;
         unsigned long  zNumOfEvents;
         unsigned long long zMaxPeriodeLength_1ns;
         THisto* zHisto;
     public:
         TKangaroo();
         ~TKangaroo();
-        void set_timestamp_buffer_100ns(
-         unsigned long long pTimestampBuffer_100ns);
+        void set_timestamp_buffer_100ns(unsigned long long pTimestampBuffer_100ns);
         void append_event(unsigned long long pRumPraline);
         void print_first_lines();
         void set_histo(THisto* pHisto);
         void determine_max_periode_length_1ns();
-        void set_max_periode_length_1ns(
-         unsigned long long  pMaxPeriodeLength_1ns); 
+        void set_max_periode_length_1ns(unsigned long long  pMaxPeriodeLength_1ns); 
         void fill_histo();
         void write_out();
 };
@@ -41,7 +37,6 @@ TKangaroo::TKangaroo() {
 }
 
 TKangaroo::~TKangaroo() {
-
 }
 
 void TKangaroo::set_timestamp_buffer_100ns(
@@ -57,19 +52,19 @@ void TKangaroo::append_event(
    unsigned short trig_id;
    unsigned short id;
 
-   timestamp_event_100ns = pRumPraline & ((0b1 << 19) - 1); 
+   timestamp_event_100ns = pRumPraline & ((2 << 19) - 1); 
    pRumPraline >>= 19;
-   zTimestamps_1ns[zNumOfEvents] = (zTimestampBuffer_100ns + timestamp_event_100ns)*100;
+   zTimestamps_1ns[zNumOfEvents] = (zTimestampBuffer_100ns + timestamp_event_100ns) * 100;
 
-   data = pRumPraline & ((0b1 << 21) - 1);
+   data = pRumPraline & ((2 << 21) - 1);
    pRumPraline >>= 21;
    zDatas[zNumOfEvents] = data;
 
-   data_id = pRumPraline & ((0b1 << 4) - 1);
+   data_id = pRumPraline & ((2 << 4) - 1);
    pRumPraline >>= 4;
    zDataIDs[zNumOfEvents] = data_id;
 
-   trig_id = pRumPraline & ((0b1 << 3) - 1);
+   trig_id = pRumPraline & ((2 << 3) - 1);
    pRumPraline >>= 3;
    zTrigIDs[zNumOfEvents] = trig_id;
 
@@ -83,11 +78,8 @@ void TKangaroo::append_event(
 void TKangaroo::print_first_lines() {
     int i;
     for(i = 0; i < 20000; i++) {
-        cout << zIDs[i] << " " 
-            << zTrigIDs[i] << " "
-            << zDataIDs[i] << " "
-            << zDatas[i] << " "
-            << zTimestamps_1ns[i] << endl;
+      printf("%d, %12d, %12d, %lu, %llu",
+	     zIDs[i], zTrigIDs[i], zDataIDs[i], zDatas[i], zTimestamps_1ns[i]);
     }
 }
 
@@ -156,11 +148,11 @@ void TKangaroo::fill_histo() {
 
 void TKangaroo::write_out() {
   //print header
-    cout << "# first time stamp (ns): " <<
-     zTimestamps_1ns[0] << endl;
-    cout << "#  last time stamp (ns): " <<
-     zTimestamps_1ns[zNumOfEvents-1] << endl;
-    cout << "# => lenth of measurement (ns): " <<
-     zTimestamps_1ns[zNumOfEvents-1]
-     -zTimestamps_1ns[0] << endl;
+  printf("# first  time stamp (ns): %llu \n" 
+	 "# last   time stamp (ns): %llu \n"
+	 "# complete duration (ns): %llu \n",
+	 zTimestamps_1ns[0],
+	 zTimestamps_1ns[zNumOfEvents - 1],
+	 zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0]);
+
 }
