@@ -9,6 +9,12 @@ using namespace std;
 #include "kangaroo.cpp"
 #include "parser.cpp"
 
+void help()
+    {
+      printf("Syntax: time ./mesyread  FILE.mdat 1 30.9 4000. 100");
+    }
+
+
 int main(int argc, char **argv) {
     char filename[512];
     int flipper;
@@ -20,6 +26,11 @@ int main(int argc, char **argv) {
     THisto* histo;
 
 
+    if (argc < 5)
+	       {
+		 help();
+	       }
+	       
 
     strcpy(filename, argv[1]);
     flipper = str2int(argv[2]);
