@@ -59,8 +59,7 @@ void TKangaroo::append_event(
 
    timestamp_event_100ns = pRumPraline & ((0b1 << 19) - 1); 
    pRumPraline >>= 19;
-   zTimestamps_1ns[zNumOfEvents] = 
-    (zTimestampBuffer_100ns + timestamp_event_100ns)*100;
+   zTimestamps_1ns[zNumOfEvents] = (zTimestampBuffer_100ns + timestamp_event_100ns)*100;
 
    data = pRumPraline & ((0b1 << 21) - 1);
    pRumPraline >>= 21;
@@ -97,8 +96,8 @@ void TKangaroo::set_histo(THisto* pHisto) {
 }
 
 void TKangaroo::determine_max_periode_length_1ns() {
-    unsigned long i;
-    unsigned long istart;
+    unsigned long long i;
+    unsigned long long istart;
     unsigned long long previous_timestamp_1ns;
     unsigned long long max;
     max = 0;
@@ -107,18 +106,19 @@ void TKangaroo::determine_max_periode_length_1ns() {
         istart++;
     }
     previous_timestamp_1ns = zTimestamps_1ns[istart];
+
     for(i = istart + 1; i < zNumOfEvents; i++) {
         if ( zDataIDs[i] == cTriggerChannel) {
-            if( (zTimestamps_1ns[i]
-             - previous_timestamp_1ns) > max) {
-                max = zTimestamps_1ns[i]
-                    - previous_timestamp_1ns;
-                previous_timestamp_1ns =
-                 zTimestamps_1ns[i];
+            if( (zTimestamps_1ns[i] - previous_timestamp_1ns) > max){
+                max = zTimestamps_1ns[i] - previous_timestamp_1ns;
             }
+	    previous_timestamp_1ns = zTimestamps_1ns[i];
         }
     }
     zMaxPeriodeLength_1ns = max;
+
+    //    printf("Debug: Periodlength = %llu", zMaxPeriodeLength_1ns);
+
 }
 
 void TKangaroo::set_max_periode_length_1ns(
@@ -155,6 +155,7 @@ void TKangaroo::fill_histo() {
 }
 
 void TKangaroo::write_out() {
+  //print header
     cout << "# first time stamp (ns): " <<
      zTimestamps_1ns[0] << endl;
     cout << "#  last time stamp (ns): " <<

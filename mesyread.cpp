@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     parser->set_filename(filename);
     parser->parse();
 
-    kangaroo->print_first_lines();
+//    kangaroo->print_first_lines(); // for debug
 
     kangaroo->set_histo(histo);
     histo->set_num_of_bins(num_of_bins);
