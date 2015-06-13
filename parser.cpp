@@ -10,7 +10,6 @@ class TParser {
     public:
         TParser();
         ~TParser();
-        void hallowelt();
         void set_kangaroo(TKangaroo* pKangaroo);
         void set_filename(char* pFilename);
         void parse();
@@ -30,10 +29,6 @@ TParser::TParser() {
 
 TParser::~TParser() {
 
-}
-
-void TParser::hallowelt() {
-    cout << "hallo welt!" << endl;
 }
 
 void TParser::set_kangaroo(TKangaroo* pKangaroo) {
@@ -117,7 +112,7 @@ int TParser::read_word(FILE* pFile) {
 }
 
 unsigned long long TParser::read_48bits(FILE* pFile) {
-    int ziffer_lo, ziffer_mid, ziffer_hi;
+    unsigned long long ziffer_lo, ziffer_mid, ziffer_hi;
     ziffer_lo = read_word(pFile);
     ziffer_mid = read_word(pFile);
     ziffer_hi = read_word(pFile);
