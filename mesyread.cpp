@@ -37,14 +37,16 @@ int main(int argc, char **argv) {
     temperature = str2float(argv[3]);
     voltage = str2float(argv[4]);
     num_of_bins = str2int(argv[5]);
-    cout << "#----------------------------------" << endl;
-    cout << "#filename:    " << filename << endl;
-    cout << "#flipper:     " << flipper << endl;
-    cout << "#temperature: " << temperature << endl;
-    cout << "#voltage:     " << voltage << endl;
-    cout << "#num of bins: " << num_of_bins << endl;
-    cout << "#----------------------------------" << endl;
-    cout << "#" << endl;
+
+    printf("# ----------------------------------\n"
+	   "# filename:     %s \n"
+	   "# flipper:      %d \n"
+  	   "# temperature:  %1.3f \n"
+   	   "# voltage:      %1.0f \n"
+   	   "# num of bins:  %d \n"
+	   "# ----------------------------------\n"
+	   "# ",
+	   filename, flipper, temperature, voltage, num_of_bins);
 
     parser = new TParser();
     kangaroo = new TKangaroo();
