@@ -87,6 +87,6 @@ void THisto::write_out() {
              << zMidPoints[i] << " "
              << zRightEdges[i] << " "
              << zCounts[i] << endl; */
-        printf("%12.3f, %12.3f, %12.3f, %12d \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
+        printf("%12.3f, %12.3f, %12.3f, %12lli \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
     }
 }

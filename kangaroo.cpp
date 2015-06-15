@@ -52,19 +52,19 @@ void TKangaroo::append_event(
    unsigned short trig_id;
    unsigned short id;
 
-   timestamp_event_100ns = pRumPraline & ((2 << 19) - 1); 
+   timestamp_event_100ns = pRumPraline & ((1 << 19) - 1); 
    pRumPraline >>= 19;
    zTimestamps_1ns[zNumOfEvents] = (zTimestampBuffer_100ns + timestamp_event_100ns) * 100;
 
-   data = pRumPraline & ((2 << 21) - 1);
+   data = pRumPraline & ((1 << 21) - 1);
    pRumPraline >>= 21;
    zDatas[zNumOfEvents] = data;
 
-   data_id = pRumPraline & ((2 << 4) - 1);
+   data_id = pRumPraline & ((1 << 4) - 1);
    pRumPraline >>= 4;
    zDataIDs[zNumOfEvents] = data_id;
 
-   trig_id = pRumPraline & ((2 << 3) - 1);
+   trig_id = pRumPraline & ((1 << 3) - 1);
    pRumPraline >>= 3;
    zTrigIDs[zNumOfEvents] = trig_id;
 
