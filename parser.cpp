@@ -107,7 +107,7 @@ int TParser::read_word(FILE* pFile) {
     int zweite_ziffer = 0;
     fread(&erste_ziffer, 1, 1, pFile);
     fread(&zweite_ziffer, 1, 1, pFile);
-    return (2 << 8) * erste_ziffer + zweite_ziffer;
+    return (erste_ziffer << 8) + zweite_ziffer;
 }
 
 unsigned long long TParser::read_48bits(FILE* pFile) {
@@ -116,8 +116,8 @@ unsigned long long TParser::read_48bits(FILE* pFile) {
     ziffer_mid = read_word(pFile);
     ziffer_hi = read_word(pFile);
     return ziffer_lo
-      + ziffer_mid * (2 << 16)
-      + ziffer_hi * (2 << 32); // FIXME THIS LINE IS BROKEN
+      + (ziffer_mid << 16)
+      + (ziffer_hi << 32); // FIXME THIS LINE IS BROKEN
 }
 
 void TParser::read_event(FILE* pFile) {
