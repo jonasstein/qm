@@ -10,6 +10,7 @@ class THisto {
         double zRightEdges[cMaxNumOfBins];
         double zBinWidth;
         unsigned long long zCounts[cMaxNumOfBins];
+        double zErrorCounts[cMaxNumOfBins];
     public:
         THisto();
         ~THisto();
@@ -18,6 +19,7 @@ class THisto {
         void set_last_right_edge(float pLastRightEdge);
         void place_bins();
         void fill(float pValue);
+        void calculate_errors();
         void write_out();
 };
 
@@ -75,18 +77,25 @@ void THisto::fill(float pValue) {
     }
 }
 
+void THisto::calculate_errors() {
+    unsigned long i;
+    for(i = 0; i < zNumOfBins; i++) {
+        zErrorCounts[i] = sqrt(zCounts[i]);
+    }
+}
+
 void THisto::write_out() {
     unsigned long i;
     cout << "#  -------" << endl;
     cout << "# | Histo:|" << endl;
     cout << "#  -------" << endl;
     cout << "# left edge (ns) | mid point (ns) | "
-         << "right egde (ns) | counts " << endl;
+         << "right egde (ns) | counts | error counts" << endl;
     for(i = 0; i < zNumOfBins; i++) {
 /*        cout << zLeftEdges[i] << " "
              << zMidPoints[i] << " "
              << zRightEdges[i] << " "
              << zCounts[i] << endl; */
-        printf("%12.3f, %12.3f, %12.3f, %12lli \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
+        printf("%12.3f, %12.3f, %12.3f, %12lli, %12.3f \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i], zErrorCounts[i]);
     }
 }

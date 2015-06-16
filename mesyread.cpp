@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <math.h>
 //#include <stdlib>
 using namespace std;
 
@@ -63,8 +64,10 @@ int main(int argc, char **argv) {
     kangaroo->determine_max_periode_length_1ns();
 //    kangaroo->set_max_periode_length_1ns(40050000);
     kangaroo->fill_histo();
+    histo->calculate_errors();
 
     kangaroo->write_out();
+
 
     histo->write_out();
 
