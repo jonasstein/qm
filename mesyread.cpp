@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <math.h>
+#include <boost/property_tree/ini_parser.hpp>
 //#include <stdlib>
 using namespace std;
 
@@ -12,12 +13,15 @@ using namespace std;
 
 void help()
     {
-      printf("Syntax: time ./mesyread  FILE.mdat 1 30.9 4000. 100");
+      printf("Syntax: time ./mesyread  FILE.mdat 30.9 4000. 100");
     }
 
 
 int main(int argc, char **argv) {
     char filename[512];
+    char inifilename[512];
+    FILE* inifile;
+    boost::property_tree::ptree pt;
     float temperature;
     float voltage;
     int num_of_bins;
@@ -26,25 +30,36 @@ int main(int argc, char **argv) {
     THisto* histo;
 
 
-    if (argc < 5)
+    if (argc < 4)
 	       {
 		 help();
 	       }
 	       
 
     strcpy(filename, argv[1]);
-    temperature = str2float(argv[3]);
-    voltage = str2float(argv[4]);
-    num_of_bins = str2int(argv[5]);
+    num_of_bins = str2int(argv[2]);
 
-    printf("# ----------------------------------\n"
-	   "# filename:     %s \n"
-  	   "# temperature:  %1.3f \n"
-   	   "# voltage:      %1.0f \n"
-   	   "# num of bins:  %d \n"
-	   "# ----------------------------------\n"
-	   "# \n",
-	   filename, temperature, voltage, num_of_bins);
+    
+    strcpy(inifilename, filename);
+    strcat(inifilename, ".ini");
+    inifile = fopen(inifilename, "r");
+    printf("# filename:               %s \n", filename);
+    if (inifile != NULL) {
+        fclose(inifile);
+        read_ini(inifilename, pt);
+        temperature = pt.get<float>("T");
+        voltage = pt.get<float>("V");
+        printf("# temperature:            %1.3f \n", temperature);
+        printf("# voltage:                %1.0f \n", voltage);
+
+    }
+    else {
+        cout << "# temperature:            unknown" << endl;
+        cout << "# voltage:                unknown" << endl;
+    }
+
+
+    printf("# num of bins:            %d \n", num_of_bins);
 
     parser = new TParser();
     kangaroo = new TKangaroo();
