@@ -1,3 +1,4 @@
+#!/bin/python
 # python add.py <file1> <file2> <filesum>
 
 import numpy as np
