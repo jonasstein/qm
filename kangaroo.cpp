@@ -141,7 +141,7 @@ void TKangaroo::fill_histo() {
         else if (zDataIDs[i] == cFlipperChannel) {
             zHisto->set_flipper_on();
         }
-        else {
+        else if (zDataIDs[i] == cEventChannel) {
             zHisto->fill((float)(  zTimestamps_1ns[i]
                              - previous_timestamp_1ns ));
         }
