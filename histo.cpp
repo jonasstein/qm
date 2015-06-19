@@ -11,6 +11,7 @@ class THisto {
         double zBinWidth;
         unsigned long long zCounts[cMaxNumOfBins];
         double zErrorCounts[cMaxNumOfBins];
+        unsigned short zFlipperOn;
     public:
         THisto();
         ~THisto();
@@ -19,6 +20,8 @@ class THisto {
         void set_last_right_edge(float pLastRightEdge);
         void place_bins();
         void fill(float pValue);
+        void set_flipper_on();
+        void set_flipper_off();
         void calculate_errors();
         void write_out();
 };
@@ -29,6 +32,7 @@ THisto::THisto() {
     for(i = 0; i < cMaxNumOfBins; i++) {
         zCounts[i] = 0;
     }
+    zFlipperOn = 0;
 }
 
 THisto::~THisto() {
@@ -77,6 +81,14 @@ void THisto::fill(float pValue) {
     }
 }
 
+void THisto::set_flipper_on() {
+    zFlipperOn = 1;
+}
+
+void THisto::set_flipper_off() {
+    zFlipperOn = 0;
+}
+
 void THisto::calculate_errors() {
     unsigned long i;
     for(i = 0; i < zNumOfBins; i++) {
@@ -86,9 +98,12 @@ void THisto::calculate_errors() {
 
 void THisto::write_out() {
     unsigned long i;
-    cout << "#  -------" << endl;
-    cout << "# | Histo:|" << endl;
-    cout << "#  -------" << endl;
+    if (zFlipperOn) {
+        cout << "# flipper : ON" << endl;
+    }
+    else {
+        cout << "# flipper: OFF" << endl;
+    }
     cout << "# left edge (ns) | mid point (ns) | "
          << "right egde (ns) | counts | error counts" << endl;
     for(i = 0; i < zNumOfBins; i++) {

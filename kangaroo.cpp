@@ -128,7 +128,7 @@ void TKangaroo::fill_histo() {
     zHisto->set_last_right_edge(
      (float)zMaxPeriodeLength_1ns);
     zHisto->place_bins();
-
+    zHisto->set_flipper_off();
     istart = 0;
     while(zDataIDs[istart] != cTriggerChannel) {
         istart++;
@@ -137,6 +137,9 @@ void TKangaroo::fill_histo() {
     for(i = istart + 1; i < zNumOfEvents; i++) {
         if (zDataIDs[i] == cTriggerChannel) {
             previous_timestamp_1ns = zTimestamps_1ns[i];
+        }
+        else if (zDataIDs[i] == cFlipperChannel) {
+            zHisto->set_flipper_on();
         }
         else {
             zHisto->fill((float)(  zTimestamps_1ns[i]

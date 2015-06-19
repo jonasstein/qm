@@ -18,7 +18,6 @@ void help()
 
 int main(int argc, char **argv) {
     char filename[512];
-    int flipper;
     float temperature;
     float voltage;
     int num_of_bins;
@@ -34,20 +33,18 @@ int main(int argc, char **argv) {
 	       
 
     strcpy(filename, argv[1]);
-    flipper = str2int(argv[2]);
     temperature = str2float(argv[3]);
     voltage = str2float(argv[4]);
     num_of_bins = str2int(argv[5]);
 
     printf("# ----------------------------------\n"
 	   "# filename:     %s \n"
-	   "# flipper:      %d \n"
   	   "# temperature:  %1.3f \n"
    	   "# voltage:      %1.0f \n"
    	   "# num of bins:  %d \n"
 	   "# ----------------------------------\n"
 	   "# \n",
-	   filename, flipper, temperature, voltage, num_of_bins);
+	   filename, temperature, voltage, num_of_bins);
 
     parser = new TParser();
     kangaroo = new TKangaroo();

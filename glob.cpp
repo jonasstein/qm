@@ -1,6 +1,7 @@
 const int cMaxNumOfEvents = 11549773;
 const int cMaxNumOfBins = 10000;
 const unsigned short cTriggerChannel = 1;
+const unsigned short cFlipperChannel = 2;
 
 int str2int(char* pString) {
     char c;
