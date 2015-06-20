@@ -99,10 +99,10 @@ void THisto::calculate_errors() {
 void THisto::write_out() {
     unsigned long i;
     if (zFlipperOn) {
-        cout << "# flipper:                ON" << endl;
+        cout << "# flipper:                       ON" << endl;
     }
     else {
-        cout << "# flipper:                OFF" << endl;
+        cout << "# flipper:                       OFF" << endl;
     }
     cout << "# --------------------------------------------" << endl;
     cout << "# left edge (ns) | mid point (ns) | "
