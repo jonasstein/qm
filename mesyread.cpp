@@ -43,23 +43,23 @@ int main(int argc, char **argv) {
     strcpy(inifilename, filename);
     strcat(inifilename, ".ini");
     inifile = fopen(inifilename, "r");
-    printf("# filename:               %s \n", filename);
+    printf("# filename:                      %s \n", filename);
     if (inifile != NULL) {
         fclose(inifile);
         read_ini(inifilename, pt);
         temperature = pt.get<float>("T");
-        voltage = pt.get<float>("V");
-        printf("# temperature:            %1.3f \n", temperature);
-        printf("# voltage:                %1.0f \n", voltage);
+        voltage = pt.get<float>("U");
+        printf("# temperature:                   %1.3f \n", temperature);
+        printf("# voltage:                       %1.0f \n", voltage);
 
     }
     else {
-        cout << "# temperature:            unknown" << endl;
-        cout << "# voltage:                unknown" << endl;
+        cout << "# temperature:                   unknown" << endl;
+        cout << "# voltage:                       unknown" << endl;
     }
 
 
-    printf("# num of bins:            %d \n", num_of_bins);
+    printf("# num of bins:                   %d \n", num_of_bins);
 
     parser = new TParser();
     kangaroo = new TKangaroo();
@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
     histo->set_num_of_bins(num_of_bins);
     kangaroo->determine_max_periode_length_1ns();
 //    kangaroo->set_max_periode_length_1ns(40050000);
+    kangaroo->determine_first_and_last_timestamp_trigger_1ns();
     kangaroo->fill_histo();
     histo->calculate_errors();
 

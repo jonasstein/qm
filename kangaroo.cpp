@@ -1,4 +1,4 @@
-// The communist kangaroo gets time variables from
+// The communist kangaroo gets time varia
 // the parser which are given in 100 nano seconds,
 // converts it somewhere to time variables in
 // nano seconds, and gives them to the histo in
@@ -17,6 +17,8 @@ class TKangaroo {
         unsigned long long zTimestampBuffer_100ns;
         unsigned long  zNumOfEvents;
         unsigned long long zMaxPeriodeLength_1ns;
+        unsigned long long zFirstTimestampTrigger_1ns;
+        unsigned long long zLastTimestampTrigger_1ns;
         THisto* zHisto;
     public:
         TKangaroo();
@@ -27,6 +29,7 @@ class TKangaroo {
         void set_histo(THisto* pHisto);
         void determine_max_periode_length_1ns();
         void set_max_periode_length_1ns(unsigned long long  pMaxPeriodeLength_1ns); 
+        void determine_first_and_last_timestamp_trigger_1ns();
         void fill_histo();
         void write_out();
 };
@@ -118,6 +121,22 @@ void TKangaroo::set_max_periode_length_1ns(
     zMaxPeriodeLength_1ns = pMaxPeriodeLength_1ns;
 }
 
+void TKangaroo::determine_first_and_last_timestamp_trigger_1ns() {
+    unsigned long i;
+    int first_trigger_was_there;
+
+    first_trigger_was_there = 0;
+    for(i = 0; i < zNumOfEvents; i++) {
+        if (zDataIDs[i] == cTriggerChannel) {
+            if (first_trigger_was_there == 0) {
+                zFirstTimestampTrigger_1ns = zTimestamps_1ns[i];
+                first_trigger_was_there = 1;
+            }
+        zLastTimestampTrigger_1ns = zTimestamps_1ns[i];
+        }
+    }
+}
+
 void TKangaroo::fill_histo() {
     unsigned long i;
     unsigned long istart;
@@ -141,9 +160,12 @@ void TKangaroo::fill_histo() {
         else if (zDataIDs[i] == cFlipperChannel) {
             zHisto->set_flipper_on();
         }
-        else {
-            zHisto->fill((float)(  zTimestamps_1ns[i]
-                             - previous_timestamp_1ns ));
+        else if (zDataIDs[i] == cEventChannel) {
+            if ( (zTimestamps_1ns[i] > zFirstTimestampTrigger_1ns)
+              && (zTimestamps_1ns[i] < zLastTimestampTrigger_1ns) ){
+                zHisto->fill((float)(  zTimestamps_1ns[i]
+                                 - previous_timestamp_1ns ));
+            }
         }
     }
 
@@ -151,11 +173,15 @@ void TKangaroo::fill_histo() {
 
 void TKangaroo::write_out() {
   //print header
-  printf("# first  time stamp (ns): %llu \n" 
-	 "# last   time stamp (ns): %llu \n"
-	 "# complete duration (ns): %llu \n",
-	 zTimestamps_1ns[0],
-	 zTimestamps_1ns[zNumOfEvents - 1],
-	 zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0]);
+  printf("# first  time stamp (ns):        %llu \n"
+         "# last   time stamp (ns):        %llu \n"
+         "# complete duration (ns):        %llu \n"
+         "# first trigger time stamp (ns): %llu \n"
+         "# last trigger time stamp (ns):  %llu \n",
+         zTimestamps_1ns[0],
+         zTimestamps_1ns[zNumOfEvents - 1],
+         zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0],
+         zFirstTimestampTrigger_1ns,
+         zLastTimestampTrigger_1ns);
 
 }
