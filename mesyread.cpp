@@ -13,7 +13,7 @@ using namespace std;
 
 void help()
     {
-      printf("Syntax: time ./mesyread  FILE.mdat 30.9 4000. 100");
+      printf("Syntax: time ./mesyread  FILE.mdat 100");
     }
 
 
@@ -48,10 +48,9 @@ int main(int argc, char **argv) {
         fclose(inifile);
         read_ini(inifilename, pt);
         temperature = pt.get<float>("T");
-        voltage = pt.get<float>("V");
-        printf("# temperature:            %1.3f \n", temperature);
-        printf("# voltage:                %1.0f \n", voltage);
-
+        voltage = pt.get<float>("U");
+        printf("# temperature:             %1.3f \n" 
+               "# voltage (Vp):            %1.0f \n", temperature, voltage);
     }
     else {
         cout << "# temperature:            unknown" << endl;
