@@ -15,8 +15,10 @@ class TKangaroo {
         unsigned short zTrigIDs[cMaxNumOfEvents];
         unsigned short zIDs[cMaxNumOfEvents];
         unsigned long long zTimestampBuffer_100ns;
-        unsigned long  zNumOfEvents;
+        unsigned long zNumOfEvents;
+        unsigned long zNumOfNeutrons;
         unsigned long long zMaxPeriodeLength_1ns;
+        unsigned long zNumOfTriggers;
         unsigned long long zFirstTimestampTrigger_1ns;
         unsigned long long zLastTimestampTrigger_1ns;
         THisto* zHisto;
@@ -28,7 +30,7 @@ class TKangaroo {
         void print_first_lines();
         void set_histo(THisto* pHisto);
         void determine_max_periode_length_1ns();
-        void set_max_periode_length_1ns(unsigned long long  pMaxPeriodeLength_1ns); 
+        void set_max_periode_length_1ns(unsigned long long  pMaxPeriodeLength_1ns);
         void determine_first_and_last_timestamp_trigger_1ns();
         void fill_histo();
         void write_out();
@@ -37,6 +39,11 @@ class TKangaroo {
 TKangaroo::TKangaroo() {
     zNumOfEvents = 0;
     zTimestampBuffer_100ns = 0;
+    zMaxPeriodeLength_1ns = 0;
+    zNumOfTriggers = 0;
+    zFirstTimestampTrigger_1ns = 0;
+    zLastTimestampTrigger_1ns = 0;
+    zNumOfNeutrons = 0;
 }
 
 TKangaroo::~TKangaroo() {
@@ -65,8 +72,14 @@ void TKangaroo::append_event(
 
    data_id = pRumPraline & ((1 << 4) - 1);
    pRumPraline >>= 4;
-   zDataIDs[zNumOfEvents] = data_id;
-
+   zDataIDs[zNumOfEvents] = data_id;   
+   
+   if (data_id == cNeutronChannel) {
+       zNumOfNeutrons++;
+   }
+   else if (data_id == cTriggerChannel) {
+       zNumOfTriggers++;
+   }
    trig_id = pRumPraline & ((1 << 3) - 1);
    pRumPraline >>= 3;
    zTrigIDs[zNumOfEvents] = trig_id;
@@ -82,7 +95,7 @@ void TKangaroo::print_first_lines() {
     int i;
     for(i = 0; i < 20000; i++) {
       printf("%d, %12d, %12d, %lu, %llu",
-	     zIDs[i], zTrigIDs[i], zDataIDs[i], zDatas[i], zTimestamps_1ns[i]);
+      zIDs[i], zTrigIDs[i], zDataIDs[i], zDatas[i], zTimestamps_1ns[i]);
     }
 }
 
@@ -95,22 +108,29 @@ void TKangaroo::determine_max_periode_length_1ns() {
     unsigned long long istart;
     unsigned long long previous_timestamp_1ns;
     unsigned long long max;
-    max = 0;
-    istart = 0;
-    while(zDataIDs[istart] != cTriggerChannel) {
-        istart++;
-    }
-    previous_timestamp_1ns = zTimestamps_1ns[istart];
-
-    for(i = istart + 1; i < zNumOfEvents; i++) {
-        if ( zDataIDs[i] == cTriggerChannel) {
-            if( (zTimestamps_1ns[i] - previous_timestamp_1ns) > max){
-                max = zTimestamps_1ns[i] - previous_timestamp_1ns;
-            }
-	    previous_timestamp_1ns = zTimestamps_1ns[i];
+    if (zNumOfTriggers >= 2) {
+        max = 0;
+        istart = 0;
+        while(zDataIDs[istart] != cTriggerChannel) {
+            istart++;
         }
+        previous_timestamp_1ns = zTimestamps_1ns[istart];
+        istart++;
+        for(i = istart; i < zNumOfEvents; i++) {
+            if ( zDataIDs[i] == cTriggerChannel) {
+                if( (zTimestamps_1ns[i] - previous_timestamp_1ns) > max){
+                    max = zTimestamps_1ns[i] - previous_timestamp_1ns;
+                }
+                previous_timestamp_1ns = zTimestamps_1ns[i];
+            }
+        }
+        zMaxPeriodeLength_1ns = max;
     }
-    zMaxPeriodeLength_1ns = max;
+    else {
+        zMaxPeriodeLength_1ns = zLastTimestampTrigger_1ns
+                              - zFirstTimestampTrigger_1ns;
+    }
+
 
     //    printf("Debug: Periodlength = %llu", zMaxPeriodeLength_1ns);
 
@@ -124,16 +144,21 @@ void TKangaroo::set_max_periode_length_1ns(
 void TKangaroo::determine_first_and_last_timestamp_trigger_1ns() {
     unsigned long i;
     int first_trigger_was_there;
-
-    first_trigger_was_there = 0;
-    for(i = 0; i < zNumOfEvents; i++) {
-        if (zDataIDs[i] == cTriggerChannel) {
-            if (first_trigger_was_there == 0) {
-                zFirstTimestampTrigger_1ns = zTimestamps_1ns[i];
-                first_trigger_was_there = 1;
+    if (zNumOfTriggers >= 2) {
+        first_trigger_was_there = 0;
+        for(i = 0; i < zNumOfEvents; i++) {
+            if (zDataIDs[i] == cTriggerChannel) {
+                if (first_trigger_was_there == 0) {
+                    zFirstTimestampTrigger_1ns = zTimestamps_1ns[i];
+                    first_trigger_was_there = 1;
+                }
+                zLastTimestampTrigger_1ns = zTimestamps_1ns[i];
             }
-        zLastTimestampTrigger_1ns = zTimestamps_1ns[i];
         }
+    }
+    else {
+        zFirstTimestampTrigger_1ns = zTimestamps_1ns[0];
+        zLastTimestampTrigger_1ns = zTimestamps_1ns[zNumOfEvents - 1];
     }
 }
 
@@ -149,10 +174,12 @@ void TKangaroo::fill_histo() {
     zHisto->place_bins();
     zHisto->set_flipper_off();
     istart = 0;
-    while(zDataIDs[istart] != cTriggerChannel) {
-        istart++;
+    if (zNumOfTriggers >= 2) {
+        while(zDataIDs[istart] != cTriggerChannel) {
+            istart++;
+        }
     }
-    previous_timestamp_1ns = zTimestamps_1ns[istart];
+    previous_timestamp_1ns = zFirstTimestampTrigger_1ns;
     for(i = istart + 1; i < zNumOfEvents; i++) {
         if (zDataIDs[i] == cTriggerChannel) {
             previous_timestamp_1ns = zTimestamps_1ns[i];
@@ -160,17 +187,12 @@ void TKangaroo::fill_histo() {
         else if (zDataIDs[i] == cFlipperChannel) {
             zHisto->set_flipper_on();
         }
-        else if (zDataIDs[i] == cEventChannel) {
-<<<<<<< HEAD
-            zHisto->fill((float)(  zTimestamps_1ns[i]
-                             - previous_timestamp_1ns ));
-=======
+        else if (zDataIDs[i] == cNeutronChannel) {
             if ( (zTimestamps_1ns[i] > zFirstTimestampTrigger_1ns)
               && (zTimestamps_1ns[i] < zLastTimestampTrigger_1ns) ){
                 zHisto->fill((float)(  zTimestamps_1ns[i]
                                  - previous_timestamp_1ns ));
             }
->>>>>>> 2ec369a5e8b8fcf410b82faaa0ed5e4548233844
         }
     }
 
@@ -181,11 +203,17 @@ void TKangaroo::write_out() {
   printf("# first  time stamp (ns):        %llu \n"
          "# last   time stamp (ns):        %llu \n"
          "# complete duration (ns):        %llu \n"
+         "# max period length (ns):        %llu \n"
+         "# num of neutrons:               %lu \n"
+         "# num of triggers:               %lu \n"
          "# first trigger time stamp (ns): %llu \n"
          "# last trigger time stamp (ns):  %llu \n",
          zTimestamps_1ns[0],
          zTimestamps_1ns[zNumOfEvents - 1],
          zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0],
+         zMaxPeriodeLength_1ns,
+         zNumOfNeutrons,
+         zNumOfTriggers,
          zFirstTimestampTrigger_1ns,
          zLastTimestampTrigger_1ns);
 

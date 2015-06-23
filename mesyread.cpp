@@ -30,10 +30,9 @@ int main(int argc, char **argv) {
     THisto* histo;
 
 
-    if (argc < 4)
-	       {
-		 help();
-	       }
+    if (argc < 4) {
+    help();
+    }
 	       
 
     strcpy(filename, argv[1]);
@@ -49,14 +48,8 @@ int main(int argc, char **argv) {
         read_ini(inifilename, pt);
         temperature = pt.get<float>("T");
         voltage = pt.get<float>("U");
-<<<<<<< HEAD
         printf("# temperature:             %1.3f \n" 
                "# voltage (Vp):            %1.0f \n", temperature, voltage);
-=======
-        printf("# temperature:                   %1.3f \n", temperature);
-        printf("# voltage:                       %1.0f \n", voltage);
-
->>>>>>> 2ec369a5e8b8fcf410b82faaa0ed5e4548233844
     }
     else {
         cout << "# temperature:                   unknown" << endl;
@@ -78,12 +71,11 @@ int main(int argc, char **argv) {
 
     kangaroo->set_histo(histo);
     histo->set_num_of_bins(num_of_bins);
-    kangaroo->determine_max_periode_length_1ns();
 //    kangaroo->set_max_periode_length_1ns(40050000);
     kangaroo->determine_first_and_last_timestamp_trigger_1ns();
+    kangaroo->determine_max_periode_length_1ns();
     kangaroo->fill_histo();
     histo->calculate_errors();
-
     kangaroo->write_out();
 
 
