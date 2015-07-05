@@ -75,9 +75,6 @@ void THisto::fill(float pValue) {
             ((pValue - zFirstLeftEdge) / zBinWidth);
     if (index < zNumOfBins) {
         zCounts[index]++;
-//        cout << zLeftEdges[index] << " < " <<
-//              pValue << " < " <<
-//              zRightEdges[index] << endl;
     }
 }
 
@@ -105,13 +102,11 @@ void THisto::write_out() {
         cout << "# flipper:                       OFF" << endl;
     }
     cout << "# --------------------------------------------" << endl;
-    cout << "# left edge (ns) | mid point (ns) | "
-         << "right egde (ns) | counts | error counts" << endl;
+    //    cout << "# left edge (ns) | mid point (ns) | "
+    //         << "right egde (ns) | counts | error counts" << endl;
+    printf("left, mid, right, CNTS, SQRT\n");
+
     for(i = 0; i < zNumOfBins; i++) {
-/*        cout << zLeftEdges[i] << " "
-             << zMidPoints[i] << " "
-             << zRightEdges[i] << " "
-             << zCounts[i] << endl; */
         printf("%12.3f, %12.3f, %12.3f, %12lli, %12.3f \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i], zErrorCounts[i]);
     }
 }

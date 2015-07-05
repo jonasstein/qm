@@ -92,6 +92,7 @@ void TKangaroo::append_event(
 
 
 void TKangaroo::print_first_lines() {
+  // TODO: rewrite this to print all lines
     int i;
     for(i = 0; i < 20000; i++) {
       printf("%d, %12d, %12d, %lu, %llu",
@@ -130,9 +131,6 @@ void TKangaroo::determine_max_periode_length_1ns() {
         zMaxPeriodeLength_1ns = zLastTimestampTrigger_1ns
                               - zFirstTimestampTrigger_1ns;
     }
-
-
-    //    printf("Debug: Periodlength = %llu", zMaxPeriodeLength_1ns);
 
 }
 
