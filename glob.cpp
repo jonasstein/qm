@@ -1,4 +1,4 @@
-const int cMaxNumOfEvents = 11549773;
+const int cMaxNumOfEvents = 50000000;
 const int cMaxNumOfBins = 10000;
 const unsigned short cNeutronChannel = 0;
 const unsigned short cTriggerChannel = 1;
