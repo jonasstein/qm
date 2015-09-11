@@ -52,8 +52,8 @@ void TSchnibbler::close_outputfile() {
 
 void TSchnibbler::add_byte(unsigned char pByte) {
     add_byte_to_buffer(pByte);
+    fputc(pByte, zOutputfile);
     if (end_of_buffer()) {
-        read_buffer();
         if (read_buffer()) {
             close_outputfile();
             zRunNumber++;

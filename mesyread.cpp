@@ -2,9 +2,9 @@
 #include <fstream>
 #include <cstring>
 #include <math.h>
-#include <ios>
-#include <stdlib.h>
-#include <stdio.h>
+//#include <ios>
+//#include <stdlib.h>
+//#include <stdio.h>
 using namespace std;
 
 #include "glob.cpp"
