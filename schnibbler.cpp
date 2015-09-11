@@ -5,19 +5,23 @@ class TSchnibbler {
 
     private:
     long zIndex;
-    char zFilename[512];
+    char zOutputfileTrunc[512];
     FILE* zOutputfile;
     unsigned char zBuffer[1500];
     int zBufferLength;
     unsigned int zRunNumber;
+    unsigned long long zTimestampBuffer100ns;
+    int zStillInHeader;
     public:
         TSchnibbler();
         ~TSchnibbler();
+        void set_outputfile_trunc(char* pOutputfileTrunc);
         void open_outputfile();
         void close_outputfile();
         void add_byte(unsigned char pByte);
         void add_byte_to_buffer(unsigned char pByte);
         int end_of_buffer();
+        int end_of_header();
         void clear_buffer();
         int read_buffer();
         unsigned long long read_48bits(FILE* pFile);
@@ -26,22 +30,27 @@ class TSchnibbler {
 
 TSchnibbler::TSchnibbler() {
     zIndex = 0;
-    strcpy(zFilename, "");
     zBufferLength = 0;
     zRunNumber = 0;
     open_outputfile();
+    zTimestampBuffer100ns = 0;
+    zStillInHeader = 1;
 }
 
 TSchnibbler::~TSchnibbler() {
     close_outputfile();
 }
 
+void TSchnibbler::set_outputfile_trunc(char* pOutputfileTrunc) {
+    strcpy(zOutputfileTrunc, pOutputfileTrunc);
+}
 
 void TSchnibbler::open_outputfile() {
     char outputfilename[128];
     char nummer[16];
     sprintf(nummer, "%06i", zRunNumber);
-    strcpy(outputfilename, "/tmp/run_");
+    strcpy(outputfilename, zOutputfileTrunc);
+    strcat(outputfilename, "_RUN");
     strcat(outputfilename, nummer);
     zOutputfile = fopen(outputfilename, "wb");
 }
@@ -51,15 +60,35 @@ void TSchnibbler::close_outputfile() {
 }
 
 void TSchnibbler::add_byte(unsigned char pByte) {
+    char timefile_name[128];
+    FILE* timefile;
+
+
     add_byte_to_buffer(pByte);
     fputc(pByte, zOutputfile);
-    if (end_of_buffer()) {
-        if (read_buffer()) {
-            close_outputfile();
-            zRunNumber++;
-            open_outputfile();
+
+    if (zStillInHeader) {
+        if (end_of_header()) {
+            clear_buffer();
+            zStillInHeader = 0;
         }
-        clear_buffer();
+    }
+    else {
+        if (end_of_buffer()) {
+            if (read_buffer()) {
+                close_outputfile();
+                zRunNumber++;                
+                strcpy(timefile_name, zOutputfileTrunc);
+                strcat(timefile_name, "_TIME");
+                timefile = fopen(timefile_name, "a");
+                fprintf(timefile,
+                    "RUN %06i TIME %015llu \n",
+                    zRunNumber, zTimestampBuffer100ns);
+                fclose(timefile);
+                open_outputfile();
+            }
+            clear_buffer();
+        }
     }
 }
 
@@ -103,6 +132,37 @@ int TSchnibbler::end_of_buffer() {
     return 1;
 }
 
+int TSchnibbler::end_of_header() {
+    if (zBufferLength < 4) {
+        return 0;
+    }
+    if (zBuffer[zBufferLength-1] != (unsigned char)-1) { // FF
+        return 0;
+    }
+    if (zBuffer[zBufferLength-2] != (unsigned char)-1) { // FF
+        return 0;
+    }
+    if (zBuffer[zBufferLength-3] != (unsigned char)-86) { // AA
+        return 0;
+    }
+    if (zBuffer[zBufferLength-4] != (unsigned char)-86) { // AA
+        return 0;
+    }
+    if (zBuffer[zBufferLength-5] != (unsigned char)85) { // 55
+        return 0;
+    }
+    if (zBuffer[zBufferLength-6] != (unsigned char)85) { // 55
+        return 0;
+    }
+    if (zBuffer[zBufferLength-7] != (unsigned char)0) { // 00
+        return 0;
+    }
+    if (zBuffer[zBufferLength-8] != (unsigned char)0) { // 00
+        return 0;
+    }
+    return 1;
+}
+
 int TSchnibbler::read_buffer() {
     int buffer_length;
     int i;
@@ -134,6 +194,7 @@ int TSchnibbler::read_buffer() {
         timestamp_buffer_100ns = (timestamp_buffer_100ns << 8) + zBuffer[12];
         timestamp_buffer_100ns = (timestamp_buffer_100ns << 8) + zBuffer[13];
 
+        zTimestampBuffer100ns = timestamp_buffer_100ns;
         cout << timestamp_buffer_100ns << " " << endl;
 
         // The four Parameters Parameter 0..3 are skipped.

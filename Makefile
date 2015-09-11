@@ -1,12 +1,12 @@
 .PHONY: clean
 
-binaries=mesyread
+binaries=mesyschnibbler
 
 CXX = g++ -O2 -Wall -Wno-unused-result
 
 all: clean $(binaries)
 
-mesyread: mesyread.cpp
+mesyschnibbler: mesyschnibbler.cpp
 	$(CXX) $^ -o $@
 
 clean:
