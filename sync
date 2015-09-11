@@ -1,6 +1,0 @@
-#!/bin/bash
-
-git status -s
-git pull
-git commit -a
-git push
