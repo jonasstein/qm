@@ -32,13 +32,11 @@ TSchnibbler::TSchnibbler() {
     zIndex = 0;
     zBufferLength = 0;
     zRunNumber = 0;
-    open_outputfile();
     zTimestampBuffer100ns = 0;
     zStillInHeader = 1;
 }
 
 TSchnibbler::~TSchnibbler() {
-    close_outputfile();
 }
 
 void TSchnibbler::set_outputfile_trunc(char* pOutputfileTrunc) {

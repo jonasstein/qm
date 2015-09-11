@@ -34,10 +34,15 @@ int main(int argc, char** arcv) {
 
         schnibbler->set_outputfile_trunc(outputfile_trunc);
 
+        schnibbler->open_outputfile();
+
         while (1) {
             byte = std::getchar();
             schnibbler->add_byte(byte);
         }
+
+        schnibbler->close_outputfile();
+
         delete(schnibbler);
     }
 }
