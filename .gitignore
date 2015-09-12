@@ -1,6 +1,5 @@
 *.swp
 a.out
-mesyread
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
