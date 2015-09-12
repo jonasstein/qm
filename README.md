@@ -1,2 +1,0 @@
-# qm
-scripts around qmesydaq
