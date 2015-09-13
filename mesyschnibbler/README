@@ -1,0 +1,6 @@
+The C++-Program that cuts the lange .mdat-file into small peaces that are defined by the super signal is called mesyschnibbler.
+
+The user interface is a bash script called schappi with two parameters:
+
+./schnappi <.mdat-filename> <directory to write in>
+
