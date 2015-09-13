@@ -21,8 +21,6 @@ class TKangaroo {
         unsigned long zNumOfTriggers;
         unsigned long long zFirstTimestampTrigger_1ns;
         unsigned long long zLastTimestampTrigger_1ns;
-        unsigned long long zFirstTimestamp_1ns;
-        unsigned long long zLastTimestamp_1ns;
         THisto* zHisto;
     public:
         TKangaroo();
@@ -64,7 +62,7 @@ void TKangaroo::append_event(
    unsigned short trig_id;
    unsigned short id;
 
-   timestamp_event_100ns = pRumPraline & ((1 << 19) - 1); 
+   timestamp_event_100ns = pRumPraline & (((unsigned long long)1 << 19) - (unsigned long long)1); 
    pRumPraline >>= 19;
    zTimestamps_1ns[zNumOfEvents] = (zTimestampBuffer_100ns + timestamp_event_100ns) * 100;
 
@@ -150,8 +148,9 @@ void TKangaroo::determine_first_and_last_timestamp_trigger_1ns() {
             if (zDataIDs[i] == cTriggerChannel) {
                 if (first_trigger_was_there == 0) {
                     zFirstTimestampTrigger_1ns = zTimestamps_1ns[i];
-                    first_trigger_was_there = 1;
+                    first_trigger_was_there++;
                 }
+//                cout << zTimestamps_1ns[i] << endl;
                 zLastTimestampTrigger_1ns = zTimestamps_1ns[i];
             }
         }
@@ -160,8 +159,6 @@ void TKangaroo::determine_first_and_last_timestamp_trigger_1ns() {
         zFirstTimestampTrigger_1ns = zTimestamps_1ns[0];
         zLastTimestampTrigger_1ns = zTimestamps_1ns[zNumOfEvents - 1];
     }
-    zFirstTimestamp_1ns = zTimestamps_1ns[0];
-    zLastTimestamp_1ns = zTimestamps_1ns[zNumOfEvents - 1];
 }
 
 void TKangaroo::fill_histo() {
@@ -209,7 +206,9 @@ void TKangaroo::write_out() {
          "# num of neutrons:               %lu \n"
          "# num of triggers:               %lu \n"
          "# first trigger time stamp (ns): %llu \n"
-         "# last trigger time stamp (ns):  %llu \n",
+         "# last trigger time stamp (ns):  %llu \n"
+         "# triggered duration (ns):       %llu \n"
+         ,
          zTimestamps_1ns[0],
          zTimestamps_1ns[zNumOfEvents - 1],
          zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0],
@@ -217,6 +216,7 @@ void TKangaroo::write_out() {
          zNumOfNeutrons,
          zNumOfTriggers,
          zFirstTimestampTrigger_1ns,
-         zLastTimestampTrigger_1ns);
+         zLastTimestampTrigger_1ns,
+         zLastTimestampTrigger_1ns - zFirstTimestampTrigger_1ns);
 
 }

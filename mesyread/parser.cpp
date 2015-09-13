@@ -87,6 +87,7 @@ void TParser::read_buffer(FILE* pFile) {
             read_word(pFile);
         }
         timestamp_buffer_100ns = read_48bits(pFile);
+        cout << timestamp_buffer_100ns << endl;
         zKangaroo->set_timestamp_buffer_100ns(
          timestamp_buffer_100ns);        
         for(i = 0; i < 4; i++) {
