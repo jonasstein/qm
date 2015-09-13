@@ -1,8 +1,46 @@
-const int cMaxNumOfEvents = 50000000;
-const int cMaxNumOfBins = 10000;
+const int cMaxNumOfEvents = 11549773;
+const int cMaxNumOfBins = 100000;
 const unsigned short cNeutronChannel = 0;
 const unsigned short cTriggerChannel = 1;
-const unsigned short cFlipperChannel = 3;
+const unsigned short cFlipperChannel = 2;
+const unsigned short cSuperChannel   = 3;
+
+struct tWord {
+    unsigned char firstbyte;
+    unsigned char secondbyte;
+};
+
+struct tThreeword {
+    tWord lo;
+    tWord mid;
+    tWord hi;
+};
+
+tWord chars2word(unsigned char pFirstbyte, unsigned char pSecondbyte) {
+    tWord result;
+    result.firstbyte = pFirstbyte;
+    result.secondbyte = pSecondbyte;
+    return result;
+}
+
+tThreeword words2threeword(tWord pLo, tWord pMid, tWord pHi) {
+    tThreeword result;
+    result.lo = pLo;
+    result.mid = pMid;
+    result.hi = pHi;
+    return result;
+}
+
+unsigned long long threeword2ull(tThreeword threeword) {
+   unsigned long long ergebnis;
+   ergebnis = threeword.hi.firstbyte;
+   ergebnis = (ergebnis << 8) + threeword.hi.secondbyte;
+   ergebnis = (ergebnis << 8) + threeword.mid.firstbyte;
+   ergebnis = (ergebnis << 8) + threeword.mid.secondbyte;
+   ergebnis = (ergebnis << 8) + threeword.lo.firstbyte;
+   ergebnis = (ergebnis << 8) + threeword.lo.secondbyte;
+   return ergebnis;
+}
 
 int str2int(char* pString) {
     char c;

@@ -25,20 +25,21 @@ int main(int argc, char **argv) {
     float temperature;
     float voltage;
     int num_of_bins;
+    unsigned char byte;
     TParser* parser;
     TKangaroo* kangaroo;
     THisto* histo;
+    int count;
 
-
-    if (argc < 2) {
+    if (argc < 1) {
     help();
     }
 	       
 
-    strcpy(filename, argv[1]);
-    num_of_bins = str2int(argv[2]);
+//    strcpy(filename, argv[1]);
+    num_of_bins = str2int(argv[1]);
 
-    
+/*   
     strcpy(inifilename, filename);
     strcat(inifilename, ".ini");
     inifile = fopen(inifilename, "r");
@@ -56,7 +57,7 @@ int main(int argc, char **argv) {
         cout << "# voltage:                       unknown" << endl;
     }
 
-
+*/
     printf("# num of bins:                   %d \n", num_of_bins);
 
     parser = new TParser();
@@ -64,22 +65,26 @@ int main(int argc, char **argv) {
     histo = new THisto();
 
     parser->set_kangaroo(kangaroo);
-    parser->set_filename(filename);
-    parser->parse();
-
-//    kangaroo->print_first_lines(); // for debug
-
+    
     kangaroo->set_histo(histo);
+
     histo->set_num_of_bins(num_of_bins);
-//    kangaroo->set_max_periode_length_1ns(40050000);
-    kangaroo->determine_first_and_last_timestamp_trigger_1ns();
-    kangaroo->determine_max_periode_length_1ns();
-    kangaroo->fill_histo();
-    histo->calculate_errors();
-    kangaroo->write_out();
 
-
-    histo->write_out();
+    count = 0;
+    while (1) {
+        byte = std::getchar();
+        parser->add_byte(byte);
+        count++;
+        if (count == 10000) {
+            kangaroo->determine_first_and_last_timestamp_trigger_1ns();
+            kangaroo->determine_max_periode_length_1ns();
+            kangaroo->fill_histo();
+            histo->calculate_errors();
+            kangaroo->write_out();
+            histo->write_out();
+            count = 0;
+        }
+    }
 
     delete(histo);
     delete(kangaroo);

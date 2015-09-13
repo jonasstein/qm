@@ -4,13 +4,12 @@
 class TSchnibbler {
 
     private:
-    long zIndex;
     char zOutputfileTrunc[512];
     FILE* zOutputfile;
     unsigned char zBuffer[1500];
     int zBufferLength;
     unsigned int zRunNumber;
-    unsigned long long zTimestampBuffer100ns;
+    unsigned long long zTimestampBuffer_100ns;
     int zStillInHeader;
     public:
         TSchnibbler();
@@ -24,15 +23,13 @@ class TSchnibbler {
         int end_of_header();
         void clear_buffer();
         int read_buffer();
-        unsigned long long read_48bits(FILE* pFile);
         int is_super(unsigned long long pRumPraline);
 };
 
 TSchnibbler::TSchnibbler() {
-    zIndex = 0;
     zBufferLength = 0;
     zRunNumber = 0;
-    zTimestampBuffer100ns = 0;
+    zTimestampBuffer_100ns = 0;
     zStillInHeader = 1;
 }
 
@@ -81,7 +78,7 @@ void TSchnibbler::add_byte(unsigned char pByte) {
                 timefile = fopen(timefile_name, "a");
                 fprintf(timefile,
                     "RUN %06i TIME %015llu \n",
-                    zRunNumber, zTimestampBuffer100ns);
+                    zRunNumber, zTimestampBuffer_100ns);
                 fclose(timefile);
                 open_outputfile();
             }
@@ -164,8 +161,6 @@ int TSchnibbler::end_of_header() {
 int TSchnibbler::read_buffer() {
     int buffer_length;
     int i;
-    tThreeword timestamp;
-    tThreeword threeword;
     unsigned long long timestamp_buffer_100ns;
     int j;
     unsigned long long rum_praline;
@@ -175,7 +170,7 @@ int TSchnibbler::read_buffer() {
 
     buffer_length = (zBuffer[0] << 8) + zBuffer[1]; // bytes 0, 1
     if (buffer_length == ((1 << 16) - 1)) {
-        // In this case it is not a buffer: the word FFFF is the first word
+        // In this case it is not a buffer: The word FFFF is the first word
         // of the closing signature, which was read in as buffer_length though
         // it is not.
     }
@@ -188,17 +183,16 @@ int TSchnibbler::read_buffer() {
 
         // The time stamp of the buffer is read in:
 
-        timestamp.lo.firstbyte = zBuffer[12];
-        timestamp.lo.secondbyte = zBuffer[13];
-        timestamp.mid.firstbyte = zBuffer[14];
-        timestamp.mid.secondbyte = zBuffer[15];
-        timestamp.hi.firstbyte = zBuffer[16];
-        timestamp.hi.secondbyte = zBuffer[17];
+        timestamp_buffer_100ns = threeword2ull(
+            words2threeword(
+                chars2word(zBuffer[12], zBuffer[13]), // lo
+                chars2word(zBuffer[14], zBuffer[15]), // mid
+                chars2word(zBuffer[16], zBuffer[17])  // hi
+            )
+        );
 
-        timestamp_buffer_100ns = threeword2ull(timestamp);
 
-
-        zTimestampBuffer100ns = timestamp_buffer_100ns;
+        zTimestampBuffer_100ns = timestamp_buffer_100ns;
 
         // The four Parameters Parameter 0..3 are skipped.
         // Those would be bytes 19-42.
@@ -206,13 +200,13 @@ int TSchnibbler::read_buffer() {
         // The events are read in:
         for(i = 0; i < (buffer_length*2 - 42) / 6; i++) {
             j = i * 6 + 42;
-            threeword.lo.firstbyte = zBuffer[j];
-            threeword.lo.secondbyte = zBuffer[j + 1];
-            threeword.mid.firstbyte = zBuffer[j + 2];
-            threeword.mid.secondbyte = zBuffer[j + 3];
-            threeword.hi.firstbyte = zBuffer[j + 4];
-            threeword.hi.secondbyte = zBuffer[j + 5];
-            rum_praline = threeword2ull(threeword);
+            rum_praline = threeword2ull(
+                words2threeword(
+                    chars2word(zBuffer[j    ], zBuffer[j + 1]), // lo
+                    chars2word(zBuffer[j + 2], zBuffer[j + 3]), // mid
+                    chars2word(zBuffer[j + 4], zBuffer[j + 5])  // hi
+                )
+            );
             if (is_super(rum_praline)) {
                 buffer_contains_supersignal = 1;
             }

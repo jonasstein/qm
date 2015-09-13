@@ -16,6 +16,21 @@ struct tThreeword {
     tWord hi;
 };
 
+tWord chars2word(unsigned char pFirstbyte, unsigned char pSecondbyte) {
+    tWord result;
+    result.firstbyte = pFirstbyte;
+    result.secondbyte = pSecondbyte;
+    return result;
+}
+
+tThreeword words2threeword(tWord pLo, tWord pMid, tWord pHi) {
+    tThreeword result;
+    result.lo = pLo;
+    result.mid = pMid;
+    result.hi = pHi;
+    return result;
+}
+
 unsigned long long threeword2ull(tThreeword threeword) {
    unsigned long long ergebnis;
    ergebnis = threeword.hi.firstbyte;
