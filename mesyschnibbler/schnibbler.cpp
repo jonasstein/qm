@@ -164,6 +164,8 @@ int TSchnibbler::end_of_header() {
 int TSchnibbler::read_buffer() {
     int buffer_length;
     int i;
+    tThreeword timestamp;
+    tThreeword threeword;
     unsigned long long timestamp_buffer_100ns;
     int j;
     unsigned long long rum_praline;
@@ -185,29 +187,32 @@ int TSchnibbler::read_buffer() {
         // Status are skipped. Those would be bytes 2-11.
 
         // The time stamp of the buffer is read in:
-        timestamp_buffer_100ns = zBuffer[16];
-        timestamp_buffer_100ns = (timestamp_buffer_100ns << 8) + zBuffer[17];
-        timestamp_buffer_100ns = (timestamp_buffer_100ns << 8) + zBuffer[14];
-        timestamp_buffer_100ns = (timestamp_buffer_100ns << 8) + zBuffer[15];
-        timestamp_buffer_100ns = (timestamp_buffer_100ns << 8) + zBuffer[12];
-        timestamp_buffer_100ns = (timestamp_buffer_100ns << 8) + zBuffer[13];
+
+        timestamp.lo.firstbyte = zBuffer[12];
+        timestamp.lo.secondbyte = zBuffer[13];
+        timestamp.mid.firstbyte = zBuffer[14];
+        timestamp.mid.secondbyte = zBuffer[15];
+        timestamp.hi.firstbyte = zBuffer[16];
+        timestamp.hi.secondbyte = zBuffer[17];
+
+        timestamp_buffer_100ns = threeword2ull(timestamp);
+
 
         zTimestampBuffer100ns = timestamp_buffer_100ns;
-        cout << timestamp_buffer_100ns << " " << endl;
 
         // The four Parameters Parameter 0..3 are skipped.
         // Those would be bytes 19-42.
 
         // The events are read in:
-        for(i = 0; i < (buffer_length - 21) / 3; i++) {
-            j = i * 6 + 43;
-            rum_praline = zBuffer[j + 5];
-            rum_praline = (rum_praline << 8) + zBuffer[j + 4];
-            rum_praline = (rum_praline << 8) + zBuffer[j + 3];
-            rum_praline = (rum_praline << 8) + zBuffer[j + 2];
-            rum_praline = (rum_praline << 8) + zBuffer[j + 1];
-            rum_praline = (rum_praline << 8) + zBuffer[j];
-            //cout << "Event: " << is_super(rum_praline) << endl;
+        for(i = 0; i < (buffer_length*2 - 42) / 6; i++) {
+            j = i * 6 + 42;
+            threeword.lo.firstbyte = zBuffer[j];
+            threeword.lo.secondbyte = zBuffer[j + 1];
+            threeword.mid.firstbyte = zBuffer[j + 2];
+            threeword.mid.secondbyte = zBuffer[j + 3];
+            threeword.hi.firstbyte = zBuffer[j + 4];
+            threeword.hi.secondbyte = zBuffer[j + 5];
+            rum_praline = threeword2ull(threeword);
             if (is_super(rum_praline)) {
                 buffer_contains_supersignal = 1;
             }
@@ -223,6 +228,6 @@ int TSchnibbler::is_super(unsigned long long pRumPraline) {
     unsigned short data_id;
 
     pRumPraline >>= 40;
-    data_id = pRumPraline & ((1 << 4) - 1);
+    data_id = pRumPraline & (((unsigned long)1 << 4) - 1);
     return (data_id == cSuperChannel);
 }

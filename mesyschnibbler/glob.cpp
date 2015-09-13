@@ -5,6 +5,28 @@ const unsigned short cTriggerChannel = 1;
 const unsigned short cFlipperChannel = 2;
 const unsigned short cSuperChannel   = 3;
 
+struct tWord {
+    unsigned char firstbyte;
+    unsigned char secondbyte;
+};
+
+struct tThreeword {
+    tWord lo;
+    tWord mid;
+    tWord hi;
+};
+
+unsigned long long threeword2ull(tThreeword threeword) {
+   unsigned long long ergebnis;
+   ergebnis = threeword.hi.firstbyte;
+   ergebnis = (ergebnis << 8) + threeword.hi.secondbyte;
+   ergebnis = (ergebnis << 8) + threeword.mid.firstbyte;
+   ergebnis = (ergebnis << 8) + threeword.mid.secondbyte;
+   ergebnis = (ergebnis << 8) + threeword.lo.firstbyte;
+   ergebnis = (ergebnis << 8) + threeword.lo.secondbyte;
+   return ergebnis;
+}
+
 int str2int(char* pString) {
     char c;
     int i;
