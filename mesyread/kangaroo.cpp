@@ -199,24 +199,22 @@ void TKangaroo::fill_histo() {
 
 void TKangaroo::write_out() {
   //print header
-  printf("# first  time stamp (ns):        %llu \n"
-         "# last   time stamp (ns):        %llu \n"
-         "# complete duration (ns):        %llu \n"
-         "# max period length (ns):        %llu \n"
-         "# num of neutrons:               %lu \n"
-         "# num of triggers:               %lu \n"
-         "# first trigger time stamp (ns): %llu \n"
-         "# last trigger time stamp (ns):  %llu \n"
-         "# triggered duration (ns):       %llu \n"
-         ,
-         zTimestamps_1ns[0],
-         zTimestamps_1ns[zNumOfEvents - 1],
-         zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0],
-         zMaxPeriodeLength_1ns,
-         zNumOfNeutrons,
-         zNumOfTriggers,
-         zFirstTimestampTrigger_1ns,
-         zLastTimestampTrigger_1ns,
-         zLastTimestampTrigger_1ns - zFirstTimestampTrigger_1ns);
-
+         zHisto->zParameters.first_time_stamp_1ns
+             = zTimestamps_1ns[0];
+         zHisto->zParameters.last_time_stamp_1ns
+             = zTimestamps_1ns[zNumOfEvents - 1];
+         zHisto->zParameters.complete_duration_1ns
+             = zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0];
+         zHisto->zParameters.max_period_length_1ns
+             = zMaxPeriodeLength_1ns;
+         zHisto->zParameters.num_of_neutrons
+             = zNumOfNeutrons;
+         zHisto->zParameters.num_of_triggers
+             = zNumOfTriggers;
+         zHisto->zParameters.first_trigger_time_stamp_1ns
+             = zFirstTimestampTrigger_1ns;
+         zHisto->zParameters.last_trigger_time_stamp_1ns
+             = zLastTimestampTrigger_1ns;
+         zHisto->zParameters.triggered_duration_1ns
+             = zLastTimestampTrigger_1ns - zFirstTimestampTrigger_1ns;
 }

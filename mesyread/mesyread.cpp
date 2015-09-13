@@ -20,6 +20,7 @@ void help()
 int main(int argc, char **argv) {
     char filename[512];
     char inifilename[512];
+    char histofilename[512];
     FILE* inifile;
     boost::property_tree::ptree pt;
     float temperature;
@@ -36,39 +37,46 @@ int main(int argc, char **argv) {
     }
 	       
 
-//    strcpy(filename, argv[1]);
     num_of_bins = str2int(argv[1]);
+    strcpy(filename, argv[2]);
 
-/*   
+    strcpy(histofilename, filename);
+    strcat(histofilename, ".csv");
     strcpy(inifilename, filename);
     strcat(inifilename, ".ini");
     inifile = fopen(inifilename, "r");
-    printf("# filename:                      %s \n", filename);
     if (inifile != NULL) {
         fclose(inifile);
         read_ini(inifilename, pt);
         temperature = pt.get<float>("T");
         voltage = pt.get<float>("U");
-        printf("# temperature:             %1.3f \n" 
-               "# voltage (Vp):            %1.0f \n", temperature, voltage);
+//        printf("# temperature:             %1.3f \n" 
+//               "# voltage (Vp):            %1.0f \n", temperature, voltage);
     }
     else {
-        cout << "# temperature:                   unknown" << endl;
-        cout << "# voltage:                       unknown" << endl;
+         temperature = 0;
+         voltage     = 0;
+//        cout << "# temperature:                   unknown" << endl;
+//        cout << "# voltage:                       unknown" << endl;
     }
 
-*/
-    printf("# num of bins:                   %d \n", num_of_bins);
+    
+
 
     parser = new TParser();
     kangaroo = new TKangaroo();
     histo = new THisto();
+
+    strcpy(histo->zParameters.filename, filename);
+    histo->zParameters.temperature = temperature;
+    histo->zParameters.voltage     = voltage;
 
     parser->set_kangaroo(kangaroo);
     
     kangaroo->set_histo(histo);
 
     histo->set_num_of_bins(num_of_bins);
+    histo->set_filename(histofilename);
 
     count = 0;
     while (1) {

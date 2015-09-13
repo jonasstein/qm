@@ -3,6 +3,7 @@
 class THisto {
     private:
         unsigned long zNumOfBins;
+        char zFileName[512];
         double zFirstLeftEdge;
         double zLastRightEdge;
         double zLeftEdges[cMaxNumOfBins];
@@ -15,7 +16,11 @@ class THisto {
     public:
         THisto();
         ~THisto();
+        tParameters zParameters;
         void set_num_of_bins(unsigned long pNumOfBins);
+        void set_filename(char* pFileName);
+        void set_temperature(long pTemperature);
+        void set_voltage(long pVoltage);
         void set_first_left_edge(float pFirstLeftEdge);
         void set_last_right_edge(float pLastRightEdge);
         void place_bins();
@@ -41,6 +46,10 @@ THisto::~THisto() {
 
 void THisto::set_num_of_bins(unsigned long pNumOfBins) {
     zNumOfBins = pNumOfBins;
+}
+
+void THisto::set_filename(char* pFileName) {
+    strcpy(zFileName, pFileName);
 }
 
 void THisto::set_first_left_edge(float pFirstLeftEdge) {
@@ -95,18 +104,49 @@ void THisto::calculate_errors() {
 
 void THisto::write_out() {
     unsigned long i;
+    FILE* file;
+    
+    file = fopen(zFileName, "w");
+    fprintf(file,
+           "# filename:                      %s \n"
+           "# num of bins:                   %lu \n"
+           "# temperature:                   %f \n"
+           "# voltage:                       %f \n"
+           "# first  time stamp (ns):        %llu \n"
+           "# last   time stamp (ns):        %llu \n"
+           "# complete duration (ns):        %llu \n"
+           "# max period length (ns):        %llu \n"
+           "# num of neutrons:               %lu \n"
+           "# num of triggers:               %lu \n"
+           "# first trigger time stamp (ns): %llu \n"
+           "# last trigger time stamp (ns):  %llu \n"
+           "# triggered duration (ns):       %llu \n",
+           zParameters.filename,
+           zNumOfBins,
+           zParameters.temperature,
+           zParameters.voltage,
+           zParameters.first_time_stamp_1ns,
+           zParameters.last_time_stamp_1ns,
+           zParameters.complete_duration_1ns,
+           zParameters.max_period_length_1ns,
+           zParameters.num_of_neutrons,
+           zParameters.num_of_triggers,
+           zParameters.first_trigger_time_stamp_1ns,
+           zParameters.last_trigger_time_stamp_1ns,
+           zParameters.triggered_duration_1ns);
+  
+
     if (zFlipperOn) {
-        cout << "# flipper:                       ON" << endl;
+        fprintf(file, "# flipper:                       ON\n");
     }
     else {
-        cout << "# flipper:                       OFF" << endl;
+        fprintf(file, "# flipper:                       OFF\n");
     }
-    cout << "# --------------------------------------------" << endl;
-    //    cout << "# left edge (ns) | mid point (ns) | "
-    //         << "right egde (ns) | counts | error counts" << endl;
-    printf("left, mid, right, CNTS, SQRT\n");
+    fprintf(file, "# --------------------------------------------\n");
+    fprintf(file, "            left,              mid,            right,             CNTS,             SQRT\n");
 
     for(i = 0; i < zNumOfBins; i++) {
-        printf("%12.3f, %12.3f, %12.3f, %12lli, %12.3f \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i], zErrorCounts[i]);
+        fprintf(file, "%16.1f, %16.1f, %16.1f, %16lli, %16.1f \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i], zErrorCounts[i]);
     }
+    fclose(file);
 }
