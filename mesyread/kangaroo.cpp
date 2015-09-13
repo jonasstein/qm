@@ -21,6 +21,8 @@ class TKangaroo {
         unsigned long zNumOfTriggers;
         unsigned long long zFirstTimestampTrigger_1ns;
         unsigned long long zLastTimestampTrigger_1ns;
+        unsigned long long zFirstTimestamp_1ns;
+        unsigned long long zLastTimestamp_1ns;
         THisto* zHisto;
     public:
         TKangaroo();
@@ -158,6 +160,8 @@ void TKangaroo::determine_first_and_last_timestamp_trigger_1ns() {
         zFirstTimestampTrigger_1ns = zTimestamps_1ns[0];
         zLastTimestampTrigger_1ns = zTimestamps_1ns[zNumOfEvents - 1];
     }
+    zFirstTimestamp_1ns = zTimestamps_1ns[0];
+    zLastTimestamp_1ns = zTimestamps_1ns[zNumOfEvents - 1];
 }
 
 void TKangaroo::fill_histo() {

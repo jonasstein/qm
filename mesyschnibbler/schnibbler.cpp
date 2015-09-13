@@ -207,7 +207,7 @@ int TSchnibbler::read_buffer() {
             rum_praline = (rum_praline << 8) + zBuffer[j + 2];
             rum_praline = (rum_praline << 8) + zBuffer[j + 1];
             rum_praline = (rum_praline << 8) + zBuffer[j];
-            cout << "Event: " << is_super(rum_praline) << endl;
+            //cout << "Event: " << is_super(rum_praline) << endl;
             if (is_super(rum_praline)) {
                 buffer_contains_supersignal = 1;
             }

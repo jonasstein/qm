@@ -4,7 +4,6 @@
 class TParser {
 
     private:
-    long zIndex;
     char zFilename[512];
     TKangaroo* zKangaroo;
     public:
@@ -23,7 +22,6 @@ class TParser {
 };
 
 TParser::TParser() {
-    zIndex = 0;
     strcpy(zFilename, "");
 }
 
@@ -90,8 +88,7 @@ void TParser::read_buffer(FILE* pFile) {
         }
         timestamp_buffer_100ns = read_48bits(pFile);
         zKangaroo->set_timestamp_buffer_100ns(
-         timestamp_buffer_100ns);
-        //zKangaroo->append_event(1 << 40);
+         timestamp_buffer_100ns);        
         for(i = 0; i < 4; i++) {
             read_48bits(pFile);
         }
