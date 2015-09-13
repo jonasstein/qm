@@ -1,9 +1,9 @@
-const int cMaxNumOfEvents = 11549773;
-const int cMaxNumOfBins = 10000;
+//const int cMaxNumOfEvents = 11549773;
+const int cMaxNumOfBins = 100000;
 const unsigned short cNeutronChannel = 0;
 const unsigned short cTriggerChannel = 1;
-const unsigned short cFlipperChannel = 3;
-const unsigned short cSuperChannel   = 0;
+const unsigned short cFlipperChannel = 2;
+const unsigned short cSuperChannel   = 3;
 
 int str2int(char* pString) {
     char c;

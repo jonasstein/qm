@@ -2,14 +2,9 @@
 #include <fstream>
 #include <cstring>
 #include <math.h>
-//#include <ios>
-//#include <stdlib.h>
-//#include <stdio.h>
 using namespace std;
 
 #include "glob.cpp"
-#include "histo.cpp"
-#include "kangaroo.cpp"
 #include "schnibbler.cpp"
 
 void help()
@@ -18,7 +13,7 @@ void help()
     }
 
 
-int main(int argc, char** arcv) {
+int main(int argc, char** argv) {
     char outputfile_trunc[512];
     unsigned char byte;
     TSchnibbler* schnibbler;
@@ -28,7 +23,7 @@ int main(int argc, char** arcv) {
              << "mesydac-file which has te be read in!" << endl;;
     }
     else {
-        strcpy(outputfile_trunc, arcv[1]);
+        strcpy(outputfile_trunc, argv[1]);
 
         schnibbler = new TSchnibbler();
 
