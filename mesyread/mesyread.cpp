@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     histo->set_filename(histofilename);
 
     count = 0;
-    while (1) {
+    while (!parser->end_of_file()) {
         byte = std::getchar();
         parser->add_byte(byte);
         count++;
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
             count = 0;
         }
     }
-
+    cout << "ende" << endl;
     delete(histo);
     delete(kangaroo);
     delete(parser);

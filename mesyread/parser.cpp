@@ -17,6 +17,7 @@ class TParser {
         void add_byte_to_buffer(unsigned char pByte);
         int end_of_buffer();
         int end_of_header();
+        int end_of_file();
         void clear_buffer();
         void read_buffer();
 };
@@ -37,7 +38,6 @@ void TParser::set_kangaroo(TKangaroo* pKangaroo) {
 
 void TParser::add_byte(unsigned char pByte) {
     add_byte_to_buffer(pByte);
-    
     if (zStillInHeader) {
         if (end_of_header()) {
             clear_buffer();
@@ -96,16 +96,10 @@ int TParser::end_of_header() {
     if (zBufferLength < 4) {
         return 0;
     }
-    if (zBuffer[zBufferLength-1] != (unsigned char)-1) { // FF
+    if (zBuffer[zBufferLength-8] != (unsigned char)0) { // 00
         return 0;
     }
-    if (zBuffer[zBufferLength-2] != (unsigned char)-1) { // FF
-        return 0;
-    }
-    if (zBuffer[zBufferLength-3] != (unsigned char)-86) { // AA
-        return 0;
-    }
-    if (zBuffer[zBufferLength-4] != (unsigned char)-86) { // AA
+    if (zBuffer[zBufferLength-8] != (unsigned char)0) { // 00
         return 0;
     }
     if (zBuffer[zBufferLength-5] != (unsigned char)85) { // 55
@@ -114,15 +108,51 @@ int TParser::end_of_header() {
     if (zBuffer[zBufferLength-6] != (unsigned char)85) { // 55
         return 0;
     }
-    if (zBuffer[zBufferLength-7] != (unsigned char)0) { // 00
+    if (zBuffer[zBufferLength-3] != (unsigned char)-86) { // AA
         return 0;
     }
-    if (zBuffer[zBufferLength-8] != (unsigned char)0) { // 00
+    if (zBuffer[zBufferLength-4] != (unsigned char)-86) { // AA
+        return 0;
+    }
+    if (zBuffer[zBufferLength-1] != (unsigned char)-1) { // FF
+        return 0;
+    }
+    if (zBuffer[zBufferLength-2] != (unsigned char)-1) { // FF
         return 0;
     }
     return 1;
 }
 
+int TParser::end_of_file() {
+    if (zBufferLength < 8) {
+        return 0;
+    }
+    if (zBuffer[zBufferLength-8] != (unsigned char)-1) { // FF
+        return 0;
+    }
+    if (zBuffer[zBufferLength-7] != (unsigned char)-1) { // FF
+        return 0;
+    }
+    if (zBuffer[zBufferLength-6] != (unsigned char)-86) { // AA
+        return 0;
+    }
+    if (zBuffer[zBufferLength-5] != (unsigned char)-86) { // AA
+        return 0;
+    }
+    if (zBuffer[zBufferLength-4] != (unsigned char)85) { // 55
+        return 0;
+    }
+    if (zBuffer[zBufferLength-3] != (unsigned char)85) { // 55
+        return 0;
+    }
+    if (zBuffer[zBufferLength-2] != (unsigned char)0) { // 00
+        return 0;
+    }
+    if (zBuffer[zBufferLength-1] != (unsigned char)0) { // 00
+        return 0;
+    }
+    return 1;
+}
 
 void TParser::read_buffer() {
     int buffer_length;

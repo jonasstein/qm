@@ -18,6 +18,7 @@ class TSchnibbler {
         void open_outputfile();
         void close_outputfile();
         void write_header();
+        void write_closing_signature();
         void add_byte(unsigned char pByte);
         void add_byte_to_buffer(unsigned char pByte);
         int end_of_buffer();
@@ -52,6 +53,7 @@ void TSchnibbler::open_outputfile() {
 }
 
 void TSchnibbler::close_outputfile() {
+    write_closing_signature();
     fclose(zOutputfile);
 }
 
@@ -67,6 +69,17 @@ void TSchnibbler::write_header() {
     fputc((char)-86, zOutputfile); // AA
     fputc((char)-1, zOutputfile);  // FF
     fputc((char)-1, zOutputfile);  // FF
+}
+
+void TSchnibbler::write_closing_signature() {
+    fputc((char)-1, zOutputfile);  // FF
+    fputc((char)-1, zOutputfile);  // FF
+    fputc((char)-86, zOutputfile); // AA
+    fputc((char)-86, zOutputfile); // AA
+    fputc((char)85, zOutputfile);  // 55
+    fputc((char)85, zOutputfile);  // 55
+    fputc((char)0, zOutputfile);   // 00
+    fputc((char)0, zOutputfile);   // 00
 }
 
 void TSchnibbler::add_byte(unsigned char pByte) {
