@@ -19,8 +19,7 @@ int main(int argc, char** argv) {
     TSchnibbler* schnibbler;
 
     if (argc < 1) {
-        cout << "Please give the name (maybe with path) of the " << endl
-             << "mesydac-file which has te be read in!" << endl;;
+      printf("usage: mesycut PathToListModeFile.mdat\n");
     }
     else {
         strcpy(outputfile_trunc, argv[1]);
@@ -31,6 +30,7 @@ int main(int argc, char** argv) {
 
         schnibbler->open_outputfile();
 
+	//FIXME: while not bitpattern for EOF
         while (1) {
             byte = std::getchar();
             schnibbler->add_byte(byte);
