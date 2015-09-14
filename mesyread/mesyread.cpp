@@ -83,7 +83,6 @@ int main(int argc, char **argv) {
             kangaroo->determine_first_and_last_timestamp_trigger_1ns();
             kangaroo->determine_max_periode_length_1ns();
             kangaroo->fill_histo();
-            histo->calculate_errors();
             kangaroo->write_out();
             histo->write_out();
             count = 0;
