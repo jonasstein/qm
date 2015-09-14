@@ -11,7 +11,6 @@ class THisto {
         double zRightEdges[cMaxNumOfBins];
         double zBinWidth;
         unsigned long long zCounts[cMaxNumOfBins];
-        double zErrorCounts[cMaxNumOfBins];
         unsigned short zFlipperOn;
     public:
         THisto();
@@ -27,7 +26,6 @@ class THisto {
         void fill(float pValue);
         void set_flipper_on();
         void set_flipper_off();
-        void calculate_errors();
         void write_out();
 };
 
@@ -95,13 +93,6 @@ void THisto::set_flipper_off() {
     zFlipperOn = 0;
 }
 
-void THisto::calculate_errors() {
-    unsigned long i;
-    for(i = 0; i < zNumOfBins; i++) {
-        zErrorCounts[i] = sqrt(zCounts[i]);
-    }
-}
-
 void THisto::write_out() {
     unsigned long i;
     FILE* file;
@@ -143,10 +134,10 @@ void THisto::write_out() {
         fprintf(file, "# flipper:                       OFF\n");
     }
     fprintf(file, "# --------------------------------------------\n");
-    fprintf(file, "            left,              mid,            right,             CNTS,             SQRT\n");
+    fprintf(file, "%16s,%16s,%16s,%16s\n", "left", "mid", "right", "counts");
 
     for(i = 0; i < zNumOfBins; i++) {
-        fprintf(file, "%16.1f, %16.1f, %16.1f, %16lli, %16.1f \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i], zErrorCounts[i]);
+        fprintf(file, "     %1.5e,     %1.5e,     %1.5e,%16llu \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
     }
     fclose(file);
 }
