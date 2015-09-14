@@ -29,14 +29,15 @@ int main(int argc, char** argv) {
         schnibbler->set_outputfile_trunc(outputfile_trunc);
 
         schnibbler->open_outputfile();
-
-	//FIXME: while not bitpattern for EOF
-        while (1) {
+        
+        while (!schnibbler->end_of_file()) {
             byte = std::getchar();
             schnibbler->add_byte(byte);
         }
 
         schnibbler->close_outputfile();
+
+        fprintf(stderr, "EOF \n");
 
         delete(schnibbler);
     }

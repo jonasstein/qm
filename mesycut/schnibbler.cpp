@@ -23,6 +23,7 @@ class TSchnibbler {
         void add_byte_to_buffer(unsigned char pByte);
         int end_of_buffer();
         int end_of_header();
+        int end_of_file();
         void clear_buffer();
         int read_buffer();
         int is_super(unsigned long long pRumPraline);
@@ -50,11 +51,13 @@ void TSchnibbler::open_outputfile() {
     strcat(outputfilename, "_RUN");
     strcat(outputfilename, nummer);
     zOutputfile = fopen(outputfilename, "wb");
+    fprintf(stderr, "Open output file: %s \n", outputfilename);
 }
 
 void TSchnibbler::close_outputfile() {
     write_closing_signature();
     fclose(zOutputfile);
+    fprintf(stderr, "Close output file. \n");
 }
 
 void TSchnibbler::write_header() {
@@ -182,6 +185,37 @@ int TSchnibbler::end_of_header() {
         return 0;
     }
     if (zBuffer[zBufferLength-8] != (unsigned char)0) { // 00
+        return 0;
+    }
+    return 1;
+}
+
+int TSchnibbler::end_of_file() {
+    if (zBufferLength < 8) {
+        return 0;
+    }
+    if (zBuffer[zBufferLength-1] != (unsigned char)0) { // 00
+        return 0;
+    }
+    if (zBuffer[zBufferLength-2] != (unsigned char)0) { // 00
+        return 0;
+    }
+    if (zBuffer[zBufferLength-3] != (unsigned char)85) { // 55
+        return 0;
+    }
+    if (zBuffer[zBufferLength-4] != (unsigned char)85) { // 55
+        return 0;
+    }
+    if (zBuffer[zBufferLength-5] != (unsigned char)-86) { // AA
+        return 0;
+    }
+    if (zBuffer[zBufferLength-6] != (unsigned char)-86) { // AA
+        return 0;
+    }
+    if (zBuffer[zBufferLength-7] != (unsigned char)-1) { // FF
+        return 0;
+    }
+    if (zBuffer[zBufferLength-8] != (unsigned char)-1) { // FF
         return 0;
     }
     return 1;

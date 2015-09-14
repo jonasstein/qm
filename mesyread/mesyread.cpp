@@ -30,7 +30,6 @@ int main(int argc, char **argv) {
     TParser* parser;
     TKangaroo* kangaroo;
     THisto* histo;
-    int count;
 
     if (argc < 1) {
     help();
@@ -74,30 +73,18 @@ int main(int argc, char **argv) {
     histo->set_num_of_bins(num_of_bins);
     histo->set_filename(histofilename);
 
-    count = 0;
     while (!parser->end_of_file()) {
         byte = std::getchar();
         parser->add_byte(byte);
-        count++;
-//        if (count == 10000) {
-//            kangaroo->determine_first_and_last_timestamp_trigger_1ns();
-//            kangaroo->determine_max_periode_length_1ns();
-//            kangaroo->fill_histo();
-//            kangaroo->write_out();
-//            histo->write_out();
-//            count = 0;
-//        }
     }
-    if (count == 10000) {
-        kangaroo->determine_first_and_last_timestamp_trigger_1ns();
-        kangaroo->determine_max_periode_length_1ns();
-        kangaroo->fill_histo();
-        kangaroo->write_out();
-        histo->write_out();
-        count = 0;
-    }
+    fprintf(stderr, "EOF\n");    
+    kangaroo->determine_first_and_last_timestamp_trigger_1ns();
+    kangaroo->determine_max_periode_length_1ns();
+    kangaroo->fill_histo();
+    kangaroo->write_out();
+    histo->write_out();
 
-    cout << "ende" << endl;
+
     delete(histo);
     delete(kangaroo);
     delete(parser);

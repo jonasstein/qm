@@ -134,10 +134,11 @@ void THisto::write_out() {
         fprintf(file, "# flipper:                       OFF\n");
     }
     fprintf(file, "# --------------------------------------------\n");
-    fprintf(file, "%16s,%16s,%16s,%16s\n", "left", "mid", "right", "counts");
+    fprintf(file, "%16s,%16s,%16s,%16s\n", "left", "mid", "right", "CNTS");
 
     for(i = 0; i < zNumOfBins; i++) {
         fprintf(file, "     %1.5e,     %1.5e,     %1.5e,%16llu \n", zLeftEdges[i], zMidPoints[i], zRightEdges[i], zCounts[i]);
     }
     fclose(file);
+    fprintf(stderr, "Histo written to: %s\n", zFileName);
 }
