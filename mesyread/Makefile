@@ -11,3 +11,4 @@ mesyread: mesyread.cpp
 
 clean:
 	rm -f $(binaries) *.o
+
