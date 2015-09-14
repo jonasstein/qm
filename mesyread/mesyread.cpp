@@ -79,15 +79,24 @@ int main(int argc, char **argv) {
         byte = std::getchar();
         parser->add_byte(byte);
         count++;
-        if (count == 10000) {
-            kangaroo->determine_first_and_last_timestamp_trigger_1ns();
-            kangaroo->determine_max_periode_length_1ns();
-            kangaroo->fill_histo();
-            kangaroo->write_out();
-            histo->write_out();
-            count = 0;
-        }
+//        if (count == 10000) {
+//            kangaroo->determine_first_and_last_timestamp_trigger_1ns();
+//            kangaroo->determine_max_periode_length_1ns();
+//            kangaroo->fill_histo();
+//            kangaroo->write_out();
+//            histo->write_out();
+//            count = 0;
+//        }
     }
+    if (count == 10000) {
+        kangaroo->determine_first_and_last_timestamp_trigger_1ns();
+        kangaroo->determine_max_periode_length_1ns();
+        kangaroo->fill_histo();
+        kangaroo->write_out();
+        histo->write_out();
+        count = 0;
+    }
+
     cout << "ende" << endl;
     delete(histo);
     delete(kangaroo);
