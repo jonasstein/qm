@@ -1,13 +1,17 @@
 .PHONY: clean
 
-binaries=mesyschnibbler
+binaries=mesycut
 
 CXX = g++ -O2 -Wall -Wno-unused-result
 
 all: clean $(binaries)
 
-mesyschnibbler: mesyschnibbler.cpp
+mesycut: mesycut.cpp
 	$(CXX) $^ -o $@
 
 clean:
 	rm -f $(binaries) *.o
+
+install:
+	echo "install mesycut to /usr/local/bin"
+	sudo cp mesycut /usr/local/bin

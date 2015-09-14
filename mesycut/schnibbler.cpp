@@ -17,6 +17,7 @@ class TSchnibbler {
         void set_outputfile_trunc(char* pOutputfileTrunc);
         void open_outputfile();
         void close_outputfile();
+        void write_header();
         void add_byte(unsigned char pByte);
         void add_byte_to_buffer(unsigned char pByte);
         int end_of_buffer();
@@ -54,6 +55,20 @@ void TSchnibbler::close_outputfile() {
     fclose(zOutputfile);
 }
 
+void TSchnibbler::write_header() {
+    fputs("This file was created by mesyschnibbler.\n"
+          "The header consists of two lines.\n", zOutputfile);
+    // Here comes the header seperator:
+    fputc((char)0, zOutputfile);   // 00
+    fputc((char)0, zOutputfile);   // 00
+    fputc((char)85, zOutputfile);  // 55
+    fputc((char)85, zOutputfile);  // 55
+    fputc((char)-86, zOutputfile); // AA
+    fputc((char)-86, zOutputfile); // AA
+    fputc((char)-1, zOutputfile);  // FF
+    fputc((char)-1, zOutputfile);  // FF
+}
+
 void TSchnibbler::add_byte(unsigned char pByte) {
     char timefile_name[128];
     FILE* timefile;
@@ -81,6 +96,7 @@ void TSchnibbler::add_byte(unsigned char pByte) {
                     zRunNumber, zTimestampBuffer_100ns);
                 fclose(timefile);
                 open_outputfile();
+                write_header();
             }
             clear_buffer();
         }

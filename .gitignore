@@ -1,7 +1,8 @@
 *.swp
 a.out
-mesyread
-mesyschnibbler
+mesyread/mesyread
+mesyschnibbler/mesyschnibbler
+mesycut/mesycut
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

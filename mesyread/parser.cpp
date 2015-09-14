@@ -22,7 +22,9 @@ class TParser {
 };
 
 TParser::TParser() {
-
+    zBufferLength = 0;
+    zTimestampBuffer_100ns = 0;
+    zStillInHeader = 1;
 }
 
 TParser::~TParser() {
