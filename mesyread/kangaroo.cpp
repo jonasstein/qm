@@ -37,6 +37,7 @@ class TKangaroo {
 };
 
 TKangaroo::TKangaroo() {
+  // constructor
     zNumOfEvents = 0;
     zTimestampBuffer_100ns = 0;
     zMaxPeriodeLength_1ns = 0;
@@ -47,6 +48,7 @@ TKangaroo::TKangaroo() {
 }
 
 TKangaroo::~TKangaroo() {
+  // destructor
 }
 
 void TKangaroo::set_timestamp_buffer_100ns(

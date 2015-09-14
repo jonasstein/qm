@@ -50,14 +50,10 @@ int main(int argc, char **argv) {
         read_ini(inifilename, pt);
         temperature = pt.get<float>("T");
         voltage = pt.get<float>("U");
-//        printf("# temperature:             %1.3f \n" 
-//               "# voltage (Vp):            %1.0f \n", temperature, voltage);
     }
     else {
          temperature = 0;
          voltage     = 0;
-//        cout << "# temperature:                   unknown" << endl;
-//        cout << "# voltage:                       unknown" << endl;
     }
 
     
