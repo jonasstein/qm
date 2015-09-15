@@ -10,7 +10,8 @@ class THisto {
         double zMidPoints[cMaxNumOfBins];
         double zRightEdges[cMaxNumOfBins];
         double zBinWidth;
-        unsigned long long zCounts[cMaxNumOfBins];
+        unsigned long long zCounts[cMaxNumOfBins]; // histo data
+        unsigned long long zCountsNotyet[cMaxNumOfBins]; // histo when next trigger comes
         unsigned short zFlipperOn;
     public:
         THisto();
@@ -24,6 +25,7 @@ class THisto {
         void set_last_right_edge(float pLastRightEdge);
         void place_bins();
         void fill(float pValue);
+        void pop(); // Data from zCountsNotyet is copied to zCounts
         void set_flipper_on();
         void set_flipper_off();
         void write_out();
@@ -34,6 +36,7 @@ THisto::THisto() {
     int i;
     for(i = 0; i < cMaxNumOfBins; i++) {
         zCounts[i] = 0;
+        zCountsNotyet[i] = 0;
     }
     zFlipperOn = 0;
 }
@@ -81,7 +84,14 @@ void THisto::fill(float pValue) {
     index = (unsigned long)
             ((pValue - zFirstLeftEdge) / zBinWidth);
     if (index < zNumOfBins) {
-        zCounts[index]++;
+        zCountsNotyet[index]++;
+    }
+}
+
+void THisto::pop() {
+    unsigned long i;
+    for(i = 0; i < zNumOfBins; i++) {
+        zCounts[i] = zCountsNotyet[i];
     }
 }
 

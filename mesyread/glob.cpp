@@ -1,5 +1,6 @@
 const int cMaxNumOfEvents = 11549773;
 const int cMaxNumOfBins = 100000;
+const int cWriteHistoEveryNBytes = 1000000;
 const unsigned short cNeutronChannel = 0;
 const unsigned short cTriggerChannel = 1;
 const unsigned short cFlipperChannel = 2;

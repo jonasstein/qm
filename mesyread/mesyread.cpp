@@ -31,6 +31,8 @@ int main(int argc, char **argv) {
     TKangaroo* kangaroo;
     THisto* histo;
     unsigned long long period_length_1ns;
+    int count;
+
 
     if (argc < 2) {
     help();
@@ -75,14 +77,20 @@ int main(int argc, char **argv) {
 
     histo->set_filename(histofilename);
 
-
+    count = 0;
     while (!parser->end_of_file()) {
         byte = std::getchar();
         parser->add_byte(byte);
+        count++;
+        if (count == cWriteHistoEveryNBytes) {
+            kangaroo->write_out();
+            histo->write_out();
+            count = 0;
+        }
     }
     fprintf(stderr, "EOF\n");    
-//    kangaroo->write_out();
-//    histo->write_out();
+    kangaroo->write_out();
+    histo->write_out();
 
 
     delete(histo);
