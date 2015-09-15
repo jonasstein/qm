@@ -85,6 +85,8 @@ void TKangaroo::append_event(
             zFirstTimestampTrigger_1ns = zTimestamp_1ns;
         }
         zLastTimestampTrigger_1ns = zTimestamp_1ns;
+        write_out();
+        zHisto->write_out();
     }
     trig_id = pRumPraline & ((1 << 3) - 1);
     pRumPraline >>= 3;

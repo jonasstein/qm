@@ -81,8 +81,8 @@ int main(int argc, char **argv) {
         parser->add_byte(byte);
     }
     fprintf(stderr, "EOF\n");    
-    kangaroo->write_out();
-    histo->write_out();
+//    kangaroo->write_out();
+//    histo->write_out();
 
 
     delete(histo);
