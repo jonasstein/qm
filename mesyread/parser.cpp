@@ -62,7 +62,7 @@ void TParser::clear_buffer() {
 }
 
 int TParser::end_of_buffer() {
-    if (zBufferLength < 4) {
+    if (zBufferLength < 8) {
         return 0;
     }
     if (zBuffer[zBufferLength-1] != (unsigned char)-86) { // AA
@@ -93,7 +93,7 @@ int TParser::end_of_buffer() {
 }
 
 int TParser::end_of_header() {
-    if (zBufferLength < 4) {
+    if (zBufferLength < 8) {
         return 0;
     }
     if (zBuffer[zBufferLength-8] != (unsigned char)0) { // 00

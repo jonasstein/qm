@@ -106,7 +106,7 @@ void THisto::write_out() {
            "# first  time stamp (ns):        %llu \n"
            "# last   time stamp (ns):        %llu \n"
            "# complete duration (ns):        %llu \n"
-           "# max period length (ns):        %llu \n"
+           "# period length (ns):            %llu \n"
            "# num of neutrons:               %lu \n"
            "# num of triggers:               %lu \n"
            "# first trigger time stamp (ns): %llu \n"
@@ -119,7 +119,7 @@ void THisto::write_out() {
            zParameters.first_time_stamp_1ns,
            zParameters.last_time_stamp_1ns,
            zParameters.complete_duration_1ns,
-           zParameters.max_period_length_1ns,
+           zParameters.period_length_1ns,
            zParameters.num_of_neutrons,
            zParameters.num_of_triggers,
            zParameters.first_trigger_time_stamp_1ns,

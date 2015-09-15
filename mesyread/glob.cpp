@@ -49,7 +49,7 @@ struct tParameters {
     unsigned long long first_time_stamp_1ns;
     unsigned long long last_time_stamp_1ns;
     unsigned long long complete_duration_1ns;
-    unsigned long long max_period_length_1ns;
+    unsigned long long period_length_1ns;
     unsigned long num_of_neutrons;
     unsigned long num_of_triggers;
     unsigned long long first_trigger_time_stamp_1ns;

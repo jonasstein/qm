@@ -30,14 +30,16 @@ int main(int argc, char **argv) {
     TParser* parser;
     TKangaroo* kangaroo;
     THisto* histo;
+    unsigned long long period_length_1ns;
 
-    if (argc < 1) {
+    if (argc < 2) {
     help();
     }
 	       
 
     num_of_bins = str2int(argv[1]);
-    strcpy(filename, argv[2]);
+    period_length_1ns = str2int(argv[2]);
+    strcpy(filename, argv[3]);
 
     strcpy(histofilename, filename);
     strcat(histofilename, ".csv");
@@ -55,9 +57,6 @@ int main(int argc, char **argv) {
          voltage     = 0;
     }
 
-    
-
-
     parser = new TParser();
     kangaroo = new TKangaroo();
     histo = new THisto();
@@ -69,18 +68,19 @@ int main(int argc, char **argv) {
     parser->set_kangaroo(kangaroo);
     
     kangaroo->set_histo(histo);
+    kangaroo->set_period_length_1ns(period_length_1ns);
 
     histo->set_num_of_bins(num_of_bins);
+    kangaroo->init_histo();
+
     histo->set_filename(histofilename);
+
 
     while (!parser->end_of_file()) {
         byte = std::getchar();
         parser->add_byte(byte);
     }
     fprintf(stderr, "EOF\n");    
-    kangaroo->determine_first_and_last_timestamp_trigger_1ns();
-    kangaroo->determine_max_periode_length_1ns();
-    kangaroo->fill_histo();
     kangaroo->write_out();
     histo->write_out();
 

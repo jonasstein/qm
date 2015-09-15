@@ -9,16 +9,17 @@
 
 class TKangaroo {
     private:
-        unsigned long long zTimestamps_1ns[cMaxNumOfEvents];
-        unsigned long  zDatas[cMaxNumOfEvents];
-        unsigned short zDataIDs[cMaxNumOfEvents];
-        unsigned short zTrigIDs[cMaxNumOfEvents];
-        unsigned short zIDs[cMaxNumOfEvents];
+        unsigned long long zTimestamp_1ns;
+        unsigned long  zData;
+        unsigned short zDataID;
+        unsigned short zTrigID;
+        unsigned short zID;
         unsigned long long zTimestampBuffer_100ns;
         unsigned long zNumOfEvents;
         unsigned long zNumOfNeutrons;
-        unsigned long long zMaxPeriodeLength_1ns;
+        unsigned long long zPeriodeLength_1ns;
         unsigned long zNumOfTriggers;
+        unsigned long long zFirstTimestamp_1ns;
         unsigned long long zFirstTimestampTrigger_1ns;
         unsigned long long zLastTimestampTrigger_1ns;
         THisto* zHisto;
@@ -27,11 +28,9 @@ class TKangaroo {
         ~TKangaroo();
         void set_timestamp_buffer_100ns(unsigned long long pTimestampBuffer_100ns);
         void append_event(unsigned long long pRumPraline);
-        void print_first_lines();
         void set_histo(THisto* pHisto);
-        void determine_max_periode_length_1ns();
-        void set_max_periode_length_1ns(unsigned long long  pMaxPeriodeLength_1ns);
-        void determine_first_and_last_timestamp_trigger_1ns();
+        void set_period_length_1ns(unsigned long long  pPeriodeLength_1ns);
+        void init_histo();
         void fill_histo();
         void write_out();
 };
@@ -40,7 +39,7 @@ TKangaroo::TKangaroo() {
   // constructor
     zNumOfEvents = 0;
     zTimestampBuffer_100ns = 0;
-    zMaxPeriodeLength_1ns = 0;
+    zPeriodeLength_1ns = 0;
     zNumOfTriggers = 0;
     zFirstTimestampTrigger_1ns = 0;
     zLastTimestampTrigger_1ns = 0;
@@ -58,157 +57,86 @@ void TKangaroo::set_timestamp_buffer_100ns(
 
 void TKangaroo::append_event(
  unsigned long long pRumPraline) {
-   unsigned long long timestamp_event_100ns;
-   unsigned long data;
-   unsigned short data_id;
-   unsigned short trig_id;
-   unsigned short id;
+    unsigned long long timestamp_event_100ns;
+    unsigned long data;
+    unsigned short data_id;
+    unsigned short trig_id;
+    unsigned short id;
 
-   timestamp_event_100ns = pRumPraline & (((unsigned long long)1 << 19) - (unsigned long long)1); 
-   pRumPraline >>= 19;
-   zTimestamps_1ns[zNumOfEvents] = (zTimestampBuffer_100ns + timestamp_event_100ns) * 100;
+    timestamp_event_100ns = pRumPraline & (((unsigned long long)1 << 19) - (unsigned long long)1); 
+    pRumPraline >>= 19;
+    zTimestamp_1ns = (zTimestampBuffer_100ns + timestamp_event_100ns) * 100;
+    if (zNumOfEvents == 0) {
+        zFirstTimestamp_1ns = (zTimestampBuffer_100ns + timestamp_event_100ns) * 100;
+    }
 
-   data = pRumPraline & ((1 << 21) - 1);
-   pRumPraline >>= 21;
-   zDatas[zNumOfEvents] = data;
+    data = pRumPraline & ((1 << 21) - 1);
+    pRumPraline >>= 21;
+    zData = data;
+    cout << zDataID << endl;
 
-   data_id = pRumPraline & ((1 << 4) - 1);
-   pRumPraline >>= 4;
-   zDataIDs[zNumOfEvents] = data_id;   
-   
-   if (data_id == cNeutronChannel) {
-       zNumOfNeutrons++;
-   }
-   else if (data_id == cTriggerChannel) {
-       zNumOfTriggers++;
-   }
-   trig_id = pRumPraline & ((1 << 3) - 1);
-   pRumPraline >>= 3;
-   zTrigIDs[zNumOfEvents] = trig_id;
+    data_id = pRumPraline & ((1 << 4) - 1);
+    pRumPraline >>= 4;
+    zDataID = data_id;   
+    
+    if (zDataID == cTriggerChannel) {
+        zNumOfTriggers++;
+        if (zNumOfTriggers == 1) {
+            zFirstTimestampTrigger_1ns = zTimestamp_1ns;
+        }
+        zLastTimestampTrigger_1ns = zTimestamp_1ns;
+    }
+    trig_id = pRumPraline & ((1 << 3) - 1);
+    pRumPraline >>= 3;
+    zTrigID = trig_id;
+ 
+    id = pRumPraline;
+    zID = id;
 
-   id = pRumPraline;
-   zIDs[zNumOfEvents] = id;
+
+    if (zNumOfTriggers > 0) {
+        if (zDataID == cFlipperChannel) {
+            zHisto->set_flipper_on();
+        }
+        else if (zDataID == cNeutronChannel) {
+            zNumOfNeutrons++;
+            zHisto->fill(
+                (float)(zTimestamp_1ns - zLastTimestampTrigger_1ns)
+            );
+        }
+    }
 
    zNumOfEvents++;
-}
 
-
-void TKangaroo::print_first_lines() {
-  // TODO: rewrite this to print all lines
-    int i;
-    for(i = 0; i < 20000; i++) {
-      printf("%d, %12d, %12d, %lu, %llu",
-      zIDs[i], zTrigIDs[i], zDataIDs[i], zDatas[i], zTimestamps_1ns[i]);
-    }
 }
 
 void TKangaroo::set_histo(THisto* pHisto) {
     zHisto = pHisto;
 }
 
-void TKangaroo::determine_max_periode_length_1ns() {
-    unsigned long long i;
-    unsigned long long istart;
-    unsigned long long previous_timestamp_1ns;
-    unsigned long long max;
-    if (zNumOfTriggers >= 2) {
-        max = 0;
-        istart = 0;
-        while(zDataIDs[istart] != cTriggerChannel) {
-            istart++;
-        }
-        previous_timestamp_1ns = zTimestamps_1ns[istart];
-        istart++;
-        for(i = istart; i < zNumOfEvents; i++) {
-            if ( zDataIDs[i] == cTriggerChannel) {
-                if( (zTimestamps_1ns[i] - previous_timestamp_1ns) > max){
-                    max = zTimestamps_1ns[i] - previous_timestamp_1ns;
-                }
-                previous_timestamp_1ns = zTimestamps_1ns[i];
-            }
-        }
-        zMaxPeriodeLength_1ns = max;
-    }
-    else {
-        zMaxPeriodeLength_1ns = zLastTimestampTrigger_1ns
-                              - zFirstTimestampTrigger_1ns;
-    }
-
+void TKangaroo::set_period_length_1ns(
+ unsigned long long pPeriodeLength_1ns) {
+    zPeriodeLength_1ns = pPeriodeLength_1ns;
 }
 
-void TKangaroo::set_max_periode_length_1ns(
- unsigned long long pMaxPeriodeLength_1ns) {
-    zMaxPeriodeLength_1ns = pMaxPeriodeLength_1ns;
-}
-
-void TKangaroo::determine_first_and_last_timestamp_trigger_1ns() {
-    unsigned long i;
-    int first_trigger_was_there;
-    if (zNumOfTriggers >= 2) {
-        first_trigger_was_there = 0;
-        for(i = 0; i < zNumOfEvents; i++) {
-            if (zDataIDs[i] == cTriggerChannel) {
-                if (first_trigger_was_there == 0) {
-                    zFirstTimestampTrigger_1ns = zTimestamps_1ns[i];
-                    first_trigger_was_there++;
-                }
-//                cout << zTimestamps_1ns[i] << endl;
-                zLastTimestampTrigger_1ns = zTimestamps_1ns[i];
-            }
-        }
-    }
-    else {
-        zFirstTimestampTrigger_1ns = zTimestamps_1ns[0];
-        zLastTimestampTrigger_1ns = zTimestamps_1ns[zNumOfEvents - 1];
-    }
-}
-
-void TKangaroo::fill_histo() {
-    unsigned long i;
-    unsigned long istart;
-    unsigned long long previous_timestamp_1ns;
-
-
+void TKangaroo::init_histo() {
     zHisto->set_first_left_edge(0.0);
     zHisto->set_last_right_edge(
-     (float)zMaxPeriodeLength_1ns);
+     (float)zPeriodeLength_1ns);
     zHisto->place_bins();
     zHisto->set_flipper_off();
-    istart = 0;
-    if (zNumOfTriggers >= 2) {
-        while(zDataIDs[istart] != cTriggerChannel) {
-            istart++;
-        }
-    }
-    previous_timestamp_1ns = zFirstTimestampTrigger_1ns;
-    for(i = istart + 1; i < zNumOfEvents; i++) {
-        if (zDataIDs[i] == cTriggerChannel) {
-            previous_timestamp_1ns = zTimestamps_1ns[i];
-        }
-        else if (zDataIDs[i] == cFlipperChannel) {
-            zHisto->set_flipper_on();
-        }
-        else if (zDataIDs[i] == cNeutronChannel) {
-            if ( (zTimestamps_1ns[i] > zFirstTimestampTrigger_1ns)
-              && (zTimestamps_1ns[i] < zLastTimestampTrigger_1ns) ){
-                zHisto->fill((float)(  zTimestamps_1ns[i]
-                                 - previous_timestamp_1ns ));
-            }
-        }
-    }
-
 }
 
 void TKangaroo::write_out() {
   //print header
          zHisto->zParameters.first_time_stamp_1ns
-             = zTimestamps_1ns[0];
+             = zFirstTimestamp_1ns;
          zHisto->zParameters.last_time_stamp_1ns
-             = zTimestamps_1ns[zNumOfEvents - 1];
+             = zTimestamp_1ns;
          zHisto->zParameters.complete_duration_1ns
-             = zTimestamps_1ns[zNumOfEvents - 1] - zTimestamps_1ns[0];
-         zHisto->zParameters.max_period_length_1ns
-             = zMaxPeriodeLength_1ns;
+             = zTimestamp_1ns - zFirstTimestamp_1ns;
+         zHisto->zParameters.period_length_1ns
+             = zPeriodeLength_1ns;
          zHisto->zParameters.num_of_neutrons
              = zNumOfNeutrons;
          zHisto->zParameters.num_of_triggers
