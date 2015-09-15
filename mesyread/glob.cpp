@@ -86,6 +86,34 @@ int str2int(char* pString) {
     return result;
 }
 
+unsigned long long str2ull(char* pString) {
+    char c;
+    int i;
+    unsigned long long result;
+    int sign;
+    i = 0;
+    result = 0;
+    c = pString[0];
+    sign = 1;
+    if (c == '+') {
+        sign = +1;
+        i++;
+    }
+    if (c == '-') {
+        sign = -1;
+        i++;
+    }
+    c = pString[i];
+    while(c != (char)0) {
+        result *= 10;
+        result += (int)c - 48;
+        i++;
+        c = pString[i];
+    }
+    result *= sign;
+    return result;
+}
+
 float str2float(char* pString) {
     char c;
     int i;

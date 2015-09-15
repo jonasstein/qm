@@ -144,7 +144,7 @@ void TKangaroo::init_histo() {
     zHisto->set_filename(filename);
     zHisto->set_first_left_edge(0.0);
     zHisto->set_last_right_edge(
-     (float)zPeriodeLength_1ns);
+     (double)zPeriodeLength_1ns);
     zHisto->place_bins();
     zHisto->set_flipper_off();
 }

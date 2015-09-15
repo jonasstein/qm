@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 	       
 
     num_of_bins = str2int(argv[1]);
-    period_length_1ns = str2int(argv[2]);
+    period_length_1ns = str2ull(argv[2]);
     strcpy(filenametrunc, argv[3]);
 
     strcpy(histofilename, filenametrunc);
