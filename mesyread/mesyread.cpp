@@ -2,8 +2,6 @@
 #include <fstream>
 #include <cstring>
 #include <math.h>
-#include <boost/property_tree/ini_parser.hpp>
-//#include <stdlib>
 using namespace std;
 
 #include "glob.cpp"
@@ -19,10 +17,7 @@ void help()
 
 int main(int argc, char **argv) {
     char filename[512];
-    char inifilename[512];
     char histofilename[512];
-    FILE* inifile;
-    boost::property_tree::ptree pt;
     float temperature;
     float voltage;
     int num_of_bins;
@@ -42,20 +37,9 @@ int main(int argc, char **argv) {
     strcpy(filename, argv[3]);
 
     strcpy(histofilename, filename);
-    strcat(histofilename, ".csv");
-    strcpy(inifilename, filename);
-    strcat(inifilename, ".ini");
-    inifile = fopen(inifilename, "r");
-    if (inifile != NULL) {
-        fclose(inifile);
-        read_ini(inifilename, pt);
-        temperature = pt.get<float>("T");
-        voltage = pt.get<float>("U");
-    }
-    else {
-         temperature = 0;
-         voltage     = 0;
-    }
+    temperature = 0;
+    voltage     = 0;
+    
 
     parser = new TParser();
     kangaroo = new TKangaroo();
@@ -81,8 +65,6 @@ int main(int argc, char **argv) {
         parser->add_byte(byte);
     }
     fprintf(stderr, "EOF\n");    
-//    kangaroo->write_out();
-//    histo->write_out();
 
 
     delete(histo);
