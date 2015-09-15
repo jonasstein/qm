@@ -18,7 +18,7 @@ void help()
 
 
 int main(int argc, char **argv) {
-    char filename[512];
+    char filenametrunc[512];
     char inifilename[512];
     char histofilename[512];
     FILE* inifile;
@@ -41,11 +41,11 @@ int main(int argc, char **argv) {
 
     num_of_bins = str2int(argv[1]);
     period_length_1ns = str2int(argv[2]);
-    strcpy(filename, argv[3]);
+    strcpy(filenametrunc, argv[3]);
 
-    strcpy(histofilename, filename);
+    strcpy(histofilename, filenametrunc);
     strcat(histofilename, ".csv");
-    strcpy(inifilename, filename);
+    strcpy(inifilename, filenametrunc);
     strcat(inifilename, ".ini");
     inifile = fopen(inifilename, "r");
     if (inifile != NULL) {
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     kangaroo = new TKangaroo();
     histo = new THisto();
 
-    strcpy(histo->zParameters.filename, filename);
+    strcpy(histo->zParameters.filename, filenametrunc);
     histo->zParameters.temperature = temperature;
     histo->zParameters.voltage     = voltage;
 
@@ -73,9 +73,9 @@ int main(int argc, char **argv) {
     kangaroo->set_period_length_1ns(period_length_1ns);
 
     histo->set_num_of_bins(num_of_bins);
+    kangaroo->set_filenametrunc(filenametrunc);
     kangaroo->init_histo();
 
-    histo->set_filename(histofilename);
 
     count = 0;
     while (!parser->end_of_file()) {
@@ -88,9 +88,9 @@ int main(int argc, char **argv) {
             count = 0;
         }
     }
-    fprintf(stderr, "EOF\n");    
-    kangaroo->write_out();
-    histo->write_out();
+//    fprintf(stderr, "EOF\n");    
+//    kangaroo->write_out();
+//    histo->write_out();
 
 
     delete(histo);

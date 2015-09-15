@@ -22,10 +22,13 @@ class TKangaroo {
         unsigned long long zFirstTimestamp_1ns;
         unsigned long long zFirstTimestampTrigger_1ns;
         unsigned long long zLastTimestampTrigger_1ns;
+        unsigned long zRun;
+        char zFilenametrunc[512];
         THisto* zHisto;
     public:
         TKangaroo();
         ~TKangaroo();
+        void set_filenametrunc(char* pFilenametrunc);
         void set_timestamp_buffer_100ns(unsigned long long pTimestampBuffer_100ns);
         void append_event(unsigned long long pRumPraline);
         void set_histo(THisto* pHisto);
@@ -44,10 +47,15 @@ TKangaroo::TKangaroo() {
     zFirstTimestampTrigger_1ns = 0;
     zLastTimestampTrigger_1ns = 0;
     zNumOfNeutrons = 0;
+    zRun = 0;
 }
 
 TKangaroo::~TKangaroo() {
   // destructor
+}
+
+void TKangaroo::set_filenametrunc(char* pFilenametrunc) {
+    strcpy(zFilenametrunc, pFilenametrunc);
 }
 
 void TKangaroo::set_timestamp_buffer_100ns(
@@ -73,7 +81,6 @@ void TKangaroo::append_event(
     data = pRumPraline & ((1 << 21) - 1);
     pRumPraline >>= 21;
     zData = data;
-    cout << zDataID << endl;
 
     data_id = pRumPraline & ((1 << 4) - 1);
     pRumPraline >>= 4;
@@ -107,7 +114,15 @@ void TKangaroo::append_event(
         }
     }
 
-   zNumOfEvents++;
+    if (zDataID == cSuperChannel) {
+        zRun++;
+        zHisto->pop();
+        write_out();
+        zHisto->write_out();
+        fprintf(stderr, "%lu \n", zRun);
+        init_histo();
+    }
+    zNumOfEvents++;
 
 }
 
@@ -121,6 +136,12 @@ void TKangaroo::set_period_length_1ns(
 }
 
 void TKangaroo::init_histo() {
+    char filename[512];
+    char endung[32];
+    sprintf(endung, "_RUN%06lu", zRun);
+    strcpy(filename, zFilenametrunc);
+    strcat(filename, endung);
+    zHisto->set_filename(filename);
     zHisto->set_first_left_edge(0.0);
     zHisto->set_last_right_edge(
      (float)zPeriodeLength_1ns);

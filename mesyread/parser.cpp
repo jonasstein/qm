@@ -124,6 +124,12 @@ int TParser::end_of_header() {
 }
 
 int TParser::end_of_file() {
+    if (zBufferLength > 0) {
+        if (zBuffer[zBufferLength - 1] == (char)-16) {
+            fprintf(stderr, "oh, die datei ist zu ende!");
+            return 0;
+        }
+    }
     if (zBufferLength < 8) {
         return 0;
     }
